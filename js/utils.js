@@ -172,11 +172,11 @@ function playChimeSound(type = 'success') {
       gainNode.connect(_audioCtx.destination);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, _audioCtx.currentTime + delay);
-      
+
       gainNode.gain.setValueAtTime(0.0001, _audioCtx.currentTime + delay);
       gainNode.gain.exponentialRampToValueAtTime(gainValue, _audioCtx.currentTime + delay + 0.04);
       gainNode.gain.exponentialRampToValueAtTime(0.0001, _audioCtx.currentTime + delay + duration);
-      
+
       osc.start(_audioCtx.currentTime + delay);
       osc.stop(_audioCtx.currentTime + delay + duration);
     };
@@ -258,40 +258,40 @@ async function resetLocalDB() {
 
   // 4. Seed default menu items
   const defaultItems = [
-    { name: 'Grand Dima Full Breakfast', description: 'Eggs, toast, grilled tomato, sausage, mushrooms, bacon & orange juice', price: 280, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600', prep_time_minutes: 20, available: true, popular: true, addons: [{"name":"Extra eggs","price":30},{"name":"Smoked salmon","price":60},{"name":"Avocado","price":45}] },
-    { name: 'Continental Breakfast', description: 'Croissant, jam, butter, fresh fruit, yogurt & coffee', price: 180, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600', prep_time_minutes: 10, available: true, popular: false, addons: [{"name":"Add egg","price":25}] },
-    { name: 'Eggs Benedict', description: 'Poached eggs on English muffin with Canadian bacon & hollandaise', price: 220, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?w=600', prep_time_minutes: 15, available: true, popular: true, addons: [{"name":"Extra hollandaise","price":20},{"name":"Smoked salmon instead","price":40}] },
-    { name: 'Avocado Toast', description: 'Sourdough, smashed avocado, cherry tomatoes, microgreens & poached egg', price: 195, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=600', prep_time_minutes: 12, available: true, popular: false, addons: [{"name":"Extra egg","price":25},{"name":"Add bacon","price":35}] },
-    
+    { name: 'Grand Dima Full Breakfast', description: 'Eggs, toast, grilled tomato, sausage, mushrooms, bacon & orange juice', price: 280, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=600', prep_time_minutes: 20, available: true, popular: true, addons: [{ "name": "Extra eggs", "price": 30 }, { "name": "Smoked salmon", "price": 60 }, { "name": "Avocado", "price": 45 }] },
+    { name: 'Continental Breakfast', description: 'Croissant, jam, butter, fresh fruit, yogurt & coffee', price: 180, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600', prep_time_minutes: 10, available: true, popular: false, addons: [{ "name": "Add egg", "price": 25 }] },
+    { name: 'Eggs Benedict', description: 'Poached eggs on English muffin with Canadian bacon & hollandaise', price: 220, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?w=600', prep_time_minutes: 15, available: true, popular: true, addons: [{ "name": "Extra hollandaise", "price": 20 }, { "name": "Smoked salmon instead", "price": 40 }] },
+    { name: 'Avocado Toast', description: 'Sourdough, smashed avocado, cherry tomatoes, microgreens & poached egg', price: 195, category_id: catMap['Breakfast'], image_url: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=600', prep_time_minutes: 12, available: true, popular: false, addons: [{ "name": "Extra egg", "price": 25 }, { "name": "Add bacon", "price": 35 }] },
+
     { name: 'Bruschetta al Pomodoro', description: 'Toasted ciabatta, fresh tomato, basil, garlic & extra virgin olive oil', price: 120, category_id: catMap['Starters'], image_url: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=600', prep_time_minutes: 8, available: true, popular: false, addons: [] },
-    { name: 'Soup of the Day', description: "Ask your waiter for today's selection. Served with artisan bread", price: 140, category_id: catMap['Starters'], image_url: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600', prep_time_minutes: 10, available: true, popular: false, addons: [{"name":"Extra bread","price":20}] },
+    { name: 'Soup of the Day', description: "Ask your waiter for today's selection. Served with artisan bread", price: 140, category_id: catMap['Starters'], image_url: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600', prep_time_minutes: 10, available: true, popular: false, addons: [{ "name": "Extra bread", "price": 20 }] },
     { name: 'Prawn Cocktail', description: 'Atlantic prawns, Marie Rose sauce, iceberg lettuce, lemon', price: 185, category_id: catMap['Starters'], image_url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600', prep_time_minutes: 10, available: true, popular: true, addons: [] },
-    
-    { name: 'Grilled Nile Perch', description: 'Pan-seared Nile perch fillet, lemon butter sauce, seasonal vegetables & choice of starch', price: 380, category_id: catMap['Main Course'], image_url: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600', prep_time_minutes: 25, available: true, popular: true, addons: [{"name":"Chips instead of rice","price":0},{"name":"Extra sauce","price":30}] },
-    { name: 'Chicken Tikka Masala', description: 'Tender chicken in rich spiced tomato cream sauce, basmati rice & naan', price: 320, category_id: catMap['Main Course'], image_url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600', prep_time_minutes: 20, available: true, popular: true, addons: [{"name":"Extra naan","price":35},{"name":"Extra spicy","price":0},{"name":"Mild","price":0}] },
-    { name: 'Vegetable Biryani', description: 'Aromatic basmati rice with seasonal vegetables, fried onions & raita', price: 260, category_id: catMap['Main Course'], image_url: 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=600', prep_time_minutes: 20, available: true, popular: false, addons: [{"name":"Add paneer","price":50},{"name":"Extra raita","price":20}] },
-    
-    { name: 'Ribeye Steak 300g', description: 'Prime-cut ribeye, hand-cut chips, grilled tomato, mushrooms & peppercorn sauce', price: 680, category_id: catMap['Grills'], image_url: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600', prep_time_minutes: 30, available: true, popular: true, addons: [{"name":"Medium rare","price":0},{"name":"Medium","price":0},{"name":"Well done","price":0},{"name":"Extra sauce","price":30}] },
+
+    { name: 'Grilled Nile Perch', description: 'Pan-seared Nile perch fillet, lemon butter sauce, seasonal vegetables & choice of starch', price: 380, category_id: catMap['Main Course'], image_url: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600', prep_time_minutes: 25, available: true, popular: true, addons: [{ "name": "Chips instead of rice", "price": 0 }, { "name": "Extra sauce", "price": 30 }] },
+    { name: 'Chicken Tikka Masala', description: 'Tender chicken in rich spiced tomato cream sauce, basmati rice & naan', price: 320, category_id: catMap['Main Course'], image_url: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600', prep_time_minutes: 20, available: true, popular: true, addons: [{ "name": "Extra naan", "price": 35 }, { "name": "Extra spicy", "price": 0 }, { "name": "Mild", "price": 0 }] },
+    { name: 'Vegetable Biryani', description: 'Aromatic basmati rice with seasonal vegetables, fried onions & raita', price: 260, category_id: catMap['Main Course'], image_url: 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=600', prep_time_minutes: 20, available: true, popular: false, addons: [{ "name": "Add paneer", "price": 50 }, { "name": "Extra raita", "price": 20 }] },
+
+    { name: 'Ribeye Steak 300g', description: 'Prime-cut ribeye, hand-cut chips, grilled tomato, mushrooms & peppercorn sauce', price: 680, category_id: catMap['Grills'], image_url: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600', prep_time_minutes: 30, available: true, popular: true, addons: [{ "name": "Medium rare", "price": 0 }, { "name": "Medium", "price": 0 }, { "name": "Well done", "price": 0 }, { "name": "Extra sauce", "price": 30 }] },
     { name: 'Lamb Chops', description: 'Herb-marinated lamb chops, mint jelly, roasted potatoes & green beans', price: 550, category_id: catMap['Grills'], image_url: 'https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600', prep_time_minutes: 28, available: true, popular: true, addons: [] },
-    { name: 'BBQ Chicken Half', description: 'Slow-grilled half chicken, BBQ glaze, coleslaw & chips', price: 320, category_id: catMap['Grills'], image_url: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600', prep_time_minutes: 25, available: true, popular: false, addons: [{"name":"Extra BBQ sauce","price":20}] },
-    
-    { name: 'Spaghetti Carbonara', description: 'Spaghetti, guanciale, egg yolk, pecorino romano, black pepper', price: 280, category_id: catMap['Pasta & Rice'], image_url: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=600', prep_time_minutes: 18, available: true, popular: true, addons: [{"name":"Add chicken","price":60},{"name":"Gluten-free pasta","price":30}] },
-    { name: 'Penne Arrabbiata', description: 'Penne in spicy tomato & garlic sauce, fresh basil, parmesan', price: 240, category_id: catMap['Pasta & Rice'], image_url: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600', prep_time_minutes: 15, available: true, popular: false, addons: [{"name":"Extra spicy","price":0},{"name":"Add prawns","price":80}] },
-    
-    { name: 'Chocolate Lava Cake', description: 'Warm dark chocolate fondant, vanilla ice cream & berry coulis', price: 180, category_id: catMap['Desserts'], image_url: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600', prep_time_minutes: 15, available: true, popular: true, addons: [{"name":"Extra ice cream","price":30}] },
+    { name: 'BBQ Chicken Half', description: 'Slow-grilled half chicken, BBQ glaze, coleslaw & chips', price: 320, category_id: catMap['Grills'], image_url: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600', prep_time_minutes: 25, available: true, popular: false, addons: [{ "name": "Extra BBQ sauce", "price": 20 }] },
+
+    { name: 'Spaghetti Carbonara', description: 'Spaghetti, guanciale, egg yolk, pecorino romano, black pepper', price: 280, category_id: catMap['Pasta & Rice'], image_url: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=600', prep_time_minutes: 18, available: true, popular: true, addons: [{ "name": "Add chicken", "price": 60 }, { "name": "Gluten-free pasta", "price": 30 }] },
+    { name: 'Penne Arrabbiata', description: 'Penne in spicy tomato & garlic sauce, fresh basil, parmesan', price: 240, category_id: catMap['Pasta & Rice'], image_url: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600', prep_time_minutes: 15, available: true, popular: false, addons: [{ "name": "Extra spicy", "price": 0 }, { "name": "Add prawns", "price": 80 }] },
+
+    { name: 'Chocolate Lava Cake', description: 'Warm dark chocolate fondant, vanilla ice cream & berry coulis', price: 180, category_id: catMap['Desserts'], image_url: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600', prep_time_minutes: 15, available: true, popular: true, addons: [{ "name": "Extra ice cream", "price": 30 }] },
     { name: 'Crème Brûlée', description: 'Classic French vanilla custard with caramelized sugar crust', price: 160, category_id: catMap['Desserts'], image_url: 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=600', prep_time_minutes: 10, available: true, popular: false, addons: [] },
     { name: 'Tiramisu', description: 'House-made tiramisu with ladyfingers, mascarpone & espresso', price: 170, category_id: catMap['Desserts'], image_url: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600', prep_time_minutes: 5, available: true, popular: true, addons: [] },
-    
-    { name: 'Ethiopian Coffee', description: 'Single-origin Ethiopian arabica, prepared your way', price: 80, category_id: catMap['Hot Drinks'], image_url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600', prep_time_minutes: 5, available: true, popular: true, addons: [{"name":"Espresso","price":0},{"name":"Americano","price":0},{"name":"Cappuccino","price":0},{"name":"Latte","price":0},{"name":"Macchiato","price":0}] },
+
+    { name: 'Ethiopian Coffee', description: 'Single-origin Ethiopian arabica, prepared your way', price: 80, category_id: catMap['Hot Drinks'], image_url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600', prep_time_minutes: 5, available: true, popular: true, addons: [{ "name": "Espresso", "price": 0 }, { "name": "Americano", "price": 0 }, { "name": "Cappuccino", "price": 0 }, { "name": "Latte", "price": 0 }, { "name": "Macchiato", "price": 0 }] },
     { name: 'Masala Chai', description: 'Spiced Indian tea with ginger, cardamom, cinnamon & steamed milk', price: 90, category_id: catMap['Hot Drinks'], image_url: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600', prep_time_minutes: 5, available: true, popular: false, addons: [] },
     { name: 'Herbal Tea', description: 'Selection of camomile, peppermint, ginger lemon or green tea', price: 75, category_id: catMap['Hot Drinks'], image_url: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=600', prep_time_minutes: 3, available: true, popular: false, addons: [] },
-    
-    { name: 'Fresh Lemonade', description: 'House-squeezed lemonade, mint & ice', price: 95, category_id: catMap['Cold Drinks'], image_url: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=600', prep_time_minutes: 5, available: true, popular: true, addons: [{"name":"Extra mint","price":0},{"name":"Sparkling water base","price":0}] },
+
+    { name: 'Fresh Lemonade', description: 'House-squeezed lemonade, mint & ice', price: 95, category_id: catMap['Cold Drinks'], image_url: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=600', prep_time_minutes: 5, available: true, popular: true, addons: [{ "name": "Extra mint", "price": 0 }, { "name": "Sparkling water base", "price": 0 }] },
     { name: 'Still Mineral Water 500ml', description: 'Chilled still mineral water', price: 55, category_id: catMap['Cold Drinks'], image_url: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600', prep_time_minutes: 2, available: true, popular: false, addons: [] },
     { name: 'Sparkling Mineral Water 500ml', description: 'Chilled sparkling mineral water', price: 65, category_id: catMap['Cold Drinks'], image_url: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600', prep_time_minutes: 2, available: true, popular: false, addons: [] },
     { name: 'Coca-Cola / Diet Coke', description: 'Ice cold Coca-Cola or Diet Coke 330ml can', price: 70, category_id: catMap['Cold Drinks'], image_url: 'https://images.unsplash.com/photo-1624517452488-04bba793476f?w=600', prep_time_minutes: 2, available: true, popular: true, addons: [] }
   ];
-  
+
   const { error: itemErr } = await sb.from('menu_items').insert(defaultItems);
   if (itemErr) throw itemErr;
 
@@ -314,13 +314,13 @@ function initTheme() {
 function toggleTheme() {
   const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  
+
   if (newTheme === 'dark') {
     document.body.classList.add('dark-mode');
   } else {
     document.body.classList.remove('dark-mode');
   }
-  
+
   localStorage.setItem(THEME_KEY, newTheme);
   updateToggleIcons(newTheme);
 }
@@ -339,56 +339,10 @@ function updateToggleIcons(theme) {
   });
 }
 
-// ---------- Service Worker Registration ----------
-function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registered with scope:', reg.scope))
-        .catch(err => console.error('Service Worker registration failed:', err));
-    });
-  }
-}
-
-// ---------- Hover Link Prefetcher ----------
-function initLinkPrefetcher() {
-  const prefetched = new Set();
-
-  function prefetch(url) {
-    if (prefetched.has(url)) return;
-    prefetched.add(url);
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = url;
-    document.head.appendChild(link);
-  }
-
-  function handleHover(e) {
-    const a = e.target.closest('a');
-    if (!a || !a.href) return;
-
-    try {
-      const url = new URL(a.href, window.location.href);
-      if (url.origin === window.location.origin) {
-        if (url.pathname && !a.href.startsWith('javascript:')) {
-          prefetch(url.pathname + url.search);
-        }
-      }
-    } catch (err) {
-      console.warn('[Prefetcher] Invalid URL for prefetching:', err);
-    }
-  }
-
-  document.addEventListener('mouseover', handleHover);
-  document.addEventListener('touchstart', handleHover, { passive: true });
-}
-
 // Auto-run on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
-  registerServiceWorker();
-  initLinkPrefetcher();
-  
+
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest('#themeToggle') || e.target.closest('.theme-toggle-btn');
     if (btn) {

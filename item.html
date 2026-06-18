@@ -1,353 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<title>Item — Grand Dima Hotel</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="css/global.css">
-<style>
-body {
-  background: var(--bg-primary);
-}
-
-/* Centered Plate Header layout */
-.item-hero-container {
-  padding: 40px 24px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  background: var(--bg-surface);
-}
-
-.item-hero-back {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: var(--bg-surface-glass);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  color: var(--gold);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--bounce);
-  -webkit-tap-highlight-color: transparent;
-  z-index: 10;
-}
-
-.item-hero-back:hover {
-  border-color: var(--gold);
-  background: rgba(230, 161, 59, 0.1);
-  transform: scale(1.08);
-}
-
-/* Clipped circular plate on item page */
-.item-plate-box {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  border: 4px solid var(--gold);
-  padding: 4px;
-  background: var(--bg-primary);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  transition: transform 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.item-plate-box img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.item-plate-box:hover {
-  transform: rotate(6deg) scale(1.03);
-}
-
-.item-body {
-  padding: 16px 24px 150px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-}
-
-.item-name {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 500;
-  font-style: italic;
-  color: var(--text-main);
-  margin-bottom: 12px;
-}
-
-.item-meta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.item-price {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--gold);
-}
-
-.item-desc {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  line-height: 1.65;
-  margin-bottom: 32px;
-  text-align: center;
-  max-width: 340px;
-  font-weight: 300;
-}
-
-/* Customizer Sections */
-.addons-section {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  margin-bottom: 24px;
-  width: 100%;
-  text-align: left;
-}
-
-.addons-title {
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-.addon-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border-color);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform var(--transition);
-}
-
-.addon-row:last-child {
-  border-bottom: none;
-}
-
-.addon-row:hover {
-  transform: translateX(4px);
-}
-
-.addon-check {
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-sm);
-  border: 2px solid var(--text-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--bounce);
-  flex-shrink: 0;
-  background: transparent;
-}
-
-.addon-row[aria-checked="true"] .addon-check {
-  background: var(--gold);
-  border-color: var(--gold);
-}
-
-.addon-check::after {
-  content: '';
-  width: 5px;
-  height: 9px;
-  border: 2.5px solid #000000;
-  border-top: none;
-  border-left: none;
-  transform: rotate(45deg) scale(0);
-  transition: transform 0.25s var(--bounce);
-}
-
-.addon-row[aria-checked="true"] .addon-check::after {
-  transform: rotate(45deg) scale(1) translateY(-1px);
-}
-
-.addon-info {
-  flex: 1;
-  margin-left: 14px;
-}
-
-.addon-name {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-main);
-}
-
-.addon-price {
-  font-size: 0.82rem;
-  color: var(--gold-light);
-  margin-top: 3px;
-}
-
-/* Instructions */
-.instructions-wrap {
-  margin-top: 12px;
-  width: 100%;
-}
-
-.instructions-wrap .addons-title {
-  text-align: center;
-  margin-bottom: 12px;
-}
-
-.instructions-wrap textarea {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-}
-
-/* Bottom Actions bar tray */
-.item-bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
-  background: var(--bg-surface-glass);
-  border-top: 1.5px solid var(--border-color);
-  z-index: 800;
-  backdrop-filter: blur(25px);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
-}
-
-.item-bottom-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 20px;
-}
-
-.item-total-info {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.item-total-label {
-  font-size: 0.72rem;
-  color: var(--text-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.item-total-price {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-top: 2px;
-}
-
-.add-cart-btn {
-  flex: 1;
-}
-</style>
-</head>
-<body class="dark-mode">
-<script>
-  (function() {
-    const theme = localStorage.getItem('gdh_theme') || 'dark';
-    if (theme === 'light') document.body.classList.remove('dark-mode');
-  })();
-</script>
-
-<div id="pageContent">
-  <div class="loading-screen"><div class="spinner"></div><p>Loading dish details...</p></div>
-</div>
-
-<div class="toast-container"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/config.js"></script>
-<script src="js/utils.js"></script>
-<script>
-let item = null;
-let selectedAddons = [];
-let qty = 1;
-
-async function loadItem() {
-  const id = getParam('id');
-  if (!id) { location.href = 'menu.html'; return; }
-
-  // 1. Try to load cached item details from cached menu list instantly
-  try {
-    const cachedItems = localStorage.getItem('gdh_cached_menu_items');
-    if (cachedItems) {
-      const list = JSON.parse(cachedItems);
-      const found = list.find(i => i.id === id);
-      if (found) {
-        item = found;
-        item.addons = Array.isArray(item.addons) ? item.addons : [];
-        render();
-      }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Item — Grand Dima Hotel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    body {
+      background: var(--bg-primary);
     }
-  } catch (e) {
-    console.warn('[Cache] Error loading cached item details:', e);
-  }
 
-  // 2. Fetch fresh details from Supabase in the background
-  const sb = getSupabase();
-  const { data, error } = await sb.from('menu_items').select('*, categories(name)').eq('id', id).single();
-  
-  if (error || !data) {
-    // If we couldn't load fresh data and have no cached item, redirect back
-    if (!item) { location.href = 'menu.html'; return; }
-    return;
-  }
+    /* Centered Plate Header layout */
+    .item-hero-container {
+      padding: 40px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      background: var(--bg-surface);
+    }
 
-  // 3. Re-render only if data has changed or if it hasn't rendered yet
-  const dataChanged = JSON.stringify(data) !== JSON.stringify(item);
-  if (dataChanged || !item) {
-    item = data;
-    item.addons = Array.isArray(item.addons) ? item.addons : [];
-    render();
-  }
-}
+    .item-hero-back {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg-surface-glass);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--gold);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--bounce);
+      -webkit-tap-highlight-color: transparent;
+      z-index: 10;
+    }
 
-function getAddonTotal() {
-  return selectedAddons.reduce((sum, a) => sum + (a.price || 0), 0);
-}
+    .item-hero-back:hover {
+      border-color: var(--gold);
+      background: rgba(230, 161, 59, 0.1);
+      transform: scale(1.08);
+    }
 
-function getLineTotal() {
-  return (item.price + getAddonTotal()) * qty;
-}
+    /* Clipped circular plate on item page */
+    .item-plate-box {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 4px solid var(--gold);
+      padding: 4px;
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transition: transform 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
 
-function render() {
-  document.title = `${item.name} — Grand Dima Hotel`;
+    .item-plate-box img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
 
-  document.getElementById('pageContent').innerHTML = `
+    .item-plate-box:hover {
+      transform: rotate(6deg) scale(1.03);
+    }
+
+    .item-body {
+      padding: 16px 24px 150px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+
+    .item-name {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 500;
+      font-style: italic;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .item-price {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .item-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      margin-bottom: 32px;
+      text-align: center;
+      max-width: 340px;
+      font-weight: 300;
+    }
+
+    /* Customizer Sections */
+    .addons-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .addons-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .addon-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform var(--transition);
+    }
+
+    .addon-row:last-child {
+      border-bottom: none;
+    }
+
+    .addon-row:hover {
+      transform: translateX(4px);
+    }
+
+    .addon-check {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--text-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--bounce);
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .addon-row[aria-checked="true"] .addon-check {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .addon-check::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2.5px solid #000000;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) scale(0);
+      transition: transform 0.25s var(--bounce);
+    }
+
+    .addon-row[aria-checked="true"] .addon-check::after {
+      transform: rotate(45deg) scale(1) translateY(-1px);
+    }
+
+    .addon-info {
+      flex: 1;
+      margin-left: 14px;
+    }
+
+    .addon-name {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .addon-price {
+      font-size: 0.82rem;
+      color: var(--gold-light);
+      margin-top: 3px;
+    }
+
+    /* Instructions */
+    .instructions-wrap {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .instructions-wrap .addons-title {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .instructions-wrap textarea {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Bottom Actions bar tray */
+    .item-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
+      background: var(--bg-surface-glass);
+      border-top: 1.5px solid var(--border-color);
+      z-index: 800;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .item-bottom-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 20px;
+    }
+
+    .item-total-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .item-total-label {
+      font-size: 0.72rem;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .item-total-price {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    .add-cart-btn {
+      flex: 1;
+    }
+  </style>
+</head>
+
+<body class="dark-mode">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('gdh_theme') || 'dark';
+      if (theme === 'light') document.body.classList.remove('dark-mode');
+    })();
+  </script>
+
+  <div id="pageContent">
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading dish details...</p>
+    </div>
+  </div>
+
+  <div class="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    let item = null;
+    let selectedAddons = [];
+    let qty = 1;
+
+    async function loadItem() {
+      const id = getParam('id');
+      if (!id) { location.href = 'menu.html'; return; }
+
+      const sb = getSupabase();
+      const { data, error } = await sb.from('menu_items').select('*, categories(name)').eq('id', id).single();
+      if (error || !data) { location.href = 'menu.html'; return; }
+
+      item = data;
+      item.addons = Array.isArray(item.addons) ? item.addons : [];
+      render();
+    }
+
+    function getAddonTotal() {
+      return selectedAddons.reduce((sum, a) => sum + (a.price || 0), 0);
+    }
+
+    function getLineTotal() {
+      return (item.price + getAddonTotal()) * qty;
+    }
+
+    function render() {
+      document.title = `${item.name} — Grand Dima Hotel`;
+
+      document.getElementById('pageContent').innerHTML = `
     <div class="item-hero-container">
       <button class="item-hero-back" onclick="history.back()" aria-label="Back to menu">
         <i class="ti ti-arrow-left"></i>
@@ -416,80 +395,81 @@ function render() {
       </div>
     </div>
   `;
-}
+    }
 
-function toggleAddon(i) {
-  const addon = item.addons[i];
-  const row = document.getElementById(`addon-row-${i}`);
-  const exists = selectedAddons.findIndex(a => a.name === addon.name);
-  if (exists >= 0) {
-    selectedAddons.splice(exists, 1);
-    row.setAttribute('aria-checked', 'false');
-    row.style.background = 'transparent';
-  } else {
-    selectedAddons.push(addon);
-    row.setAttribute('aria-checked', 'true');
-    row.style.background = 'rgba(200, 169, 110, 0.05)';
-  }
-  playChimeSound('click');
-  updateTotals();
-}
+    function toggleAddon(i) {
+      const addon = item.addons[i];
+      const row = document.getElementById(`addon-row-${i}`);
+      const exists = selectedAddons.findIndex(a => a.name === addon.name);
+      if (exists >= 0) {
+        selectedAddons.splice(exists, 1);
+        row.setAttribute('aria-checked', 'false');
+        row.style.background = 'transparent';
+      } else {
+        selectedAddons.push(addon);
+        row.setAttribute('aria-checked', 'true');
+        row.style.background = 'rgba(200, 169, 110, 0.05)';
+      }
+      playChimeSound('click');
+      updateTotals();
+    }
 
-function changeQty(delta) {
-  qty = Math.max(1, qty + delta);
-  document.getElementById('qtyDisplay').textContent = qty;
-  updateTotals();
-  
-  // Rotating visual plate micro-animation
-  const plate = document.querySelector('.item-plate-box img');
-  if (plate) {
-    plate.style.transform = `rotate(${qty * 12}deg) scale(1.05)`;
-    plate.style.transition = 'transform 0.4s var(--bounce)';
-    setTimeout(() => {
-      plate.style.transform = `rotate(${qty * 12}deg) scale(1)`;
-    }, 400);
-  }
-  playChimeSound('click');
-}
+    function changeQty(delta) {
+      qty = Math.max(1, qty + delta);
+      document.getElementById('qtyDisplay').textContent = qty;
+      updateTotals();
 
-function updateTotals() {
-  const el = document.getElementById('lineTotal');
-  if (el) {
-    el.textContent = fmtPrice(getLineTotal());
-    el.style.transform = 'scale(1.1)';
-    el.style.transition = 'transform 0.15s ease';
-    setTimeout(() => {
-      el.style.transform = 'scale(1)';
-    }, 150);
-  }
-}
+      // Rotating visual plate micro-animation
+      const plate = document.querySelector('.item-plate-box img');
+      if (plate) {
+        plate.style.transform = `rotate(${qty * 12}deg) scale(1.05)`;
+        plate.style.transition = 'transform 0.4s var(--bounce)';
+        setTimeout(() => {
+          plate.style.transform = `rotate(${qty * 12}deg) scale(1)`;
+        }, 400);
+      }
+      playChimeSound('click');
+    }
 
-function addItemToCart() {
-  const instructions = document.getElementById('specialInstructions')?.value.trim() || '';
-  const unitPrice = item.price + getAddonTotal();
-  addToCart({
-    menu_item_id: item.id,
-    name: item.name,
-    image_url: item.image_url,
-    unit_price: unitPrice,
-    quantity: qty,
-    subtotal: unitPrice * qty,
-    special_instructions: instructions,
-    selected_addons: [...selectedAddons],
-  });
-  playChimeSound('success');
-  toast(`${item.name} added to cart`, 'success');
-  setTimeout(() => location.href = 'menu.html', 750);
-}
+    function updateTotals() {
+      const el = document.getElementById('lineTotal');
+      if (el) {
+        el.textContent = fmtPrice(getLineTotal());
+        el.style.transform = 'scale(1.1)';
+        el.style.transition = 'transform 0.15s ease';
+        setTimeout(() => {
+          el.style.transform = 'scale(1)';
+        }, 150);
+      }
+    }
 
-loadItem().catch(() => {
-  document.getElementById('pageContent').innerHTML = `
+    function addItemToCart() {
+      const instructions = document.getElementById('specialInstructions')?.value.trim() || '';
+      const unitPrice = item.price + getAddonTotal();
+      addToCart({
+        menu_item_id: item.id,
+        name: item.name,
+        image_url: item.image_url,
+        unit_price: unitPrice,
+        quantity: qty,
+        subtotal: unitPrice * qty,
+        special_instructions: instructions,
+        selected_addons: [...selectedAddons],
+      });
+      playChimeSound('success');
+      toast(`${item.name} added to cart`, 'success');
+      setTimeout(() => location.href = 'menu.html', 750);
+    }
+
+    loadItem().catch(() => {
+      document.getElementById('pageContent').innerHTML = `
     <div class="empty-state" style="min-height:100dvh">
       <i class="ti ti-alert-triangle"></i>
       <h3>Dish details not found</h3>
       <a href="menu.html" class="btn btn-gold mt-16">Back to Menu</a>
     </div>`;
-});
-</script>
+    });
+  </script>
 </body>
+
 </html>
