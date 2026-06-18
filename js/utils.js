@@ -339,9 +339,55 @@ function updateToggleIcons(theme) {
   });
 }
 
+// ---------- Service Worker Registration ----------
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered with scope:', reg.scope))
+        .catch(err => console.error('Service Worker registration failed:', err));
+    });
+  }
+}
+
+// ---------- Hover Link Prefetcher ----------
+function initLinkPrefetcher() {
+  const prefetched = new Set();
+
+  function prefetch(url) {
+    if (prefetched.has(url)) return;
+    prefetched.add(url);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = url;
+    document.head.appendChild(link);
+  }
+
+  function handleHover(e) {
+    const a = e.target.closest('a');
+    if (!a || !a.href) return;
+
+    try {
+      const url = new URL(a.href, window.location.href);
+      if (url.origin === window.location.origin) {
+        if (url.pathname && !a.href.startsWith('javascript:')) {
+          prefetch(url.pathname + url.search);
+        }
+      }
+    } catch (err) {
+      console.warn('[Prefetcher] Invalid URL for prefetching:', err);
+    }
+  }
+
+  document.addEventListener('mouseover', handleHover);
+  document.addEventListener('touchstart', handleHover, { passive: true });
+}
+
 // Auto-run on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  registerServiceWorker();
+  initLinkPrefetcher();
   
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest('#themeToggle') || e.target.closest('.theme-toggle-btn');

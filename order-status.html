@@ -378,17 +378,50 @@ async function init() {
 
 async function loadOrders(ids) {
   if (!ids.length) { renderNoOrders(); return; }
-  const sb = getSupabase();
 
+  // 1. Try to load cached orders immediately
+  try {
+    const cached = localStorage.getItem('gdh_cached_orders');
+    if (cached) {
+      const ordersList = JSON.parse(cached);
+      // Filter list to keep only active IDs being requested
+      const matchingOrders = ordersList.filter(o => ids.includes(o.id));
+      if (matchingOrders.length) {
+        matchingOrders.forEach(o => { loadedOrders[o.id] = o; });
+        renderOrders(matchingOrders);
+      }
+    }
+  } catch (e) {
+    console.warn('[Cache] Error loading cached orders:', e);
+  }
+
+  // 2. Fetch fresh details from Supabase in the background
+  const sb = getSupabase();
   const { data: orders } = await sb
     .from('orders')
     .select('*, order_items(*)')
     .in('id', ids)
     .order('created_at', { ascending: false });
 
-  if (!orders?.length) { renderNoOrders(); return; }
-  orders.forEach(o => { loadedOrders[o.id] = o; });
-  renderOrders(orders);
+  const freshOrders = orders || [];
+
+  if (!freshOrders.length) {
+    if (!Object.keys(loadedOrders).length) renderNoOrders();
+    return;
+  }
+
+  // 3. Determine if data has actually changed (to prevent screen flickering)
+  const cachedOrdersRaw = localStorage.getItem('gdh_cached_orders');
+  const dataChanged = JSON.stringify(freshOrders) !== cachedOrdersRaw;
+
+  // 4. Update the localStorage cache
+  localStorage.setItem('gdh_cached_orders', JSON.stringify(freshOrders));
+
+  // 5. Update loadedOrders state and re-render if changed or not rendered yet
+  if (dataChanged || !Object.keys(loadedOrders).length) {
+    freshOrders.forEach(o => { loadedOrders[o.id] = o; });
+    renderOrders(freshOrders);
+  }
 }
 
 function renderOrders(orders) {

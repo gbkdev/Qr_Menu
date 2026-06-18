@@ -301,13 +301,39 @@ async function loadItem() {
   const id = getParam('id');
   if (!id) { location.href = 'menu.html'; return; }
 
+  // 1. Try to load cached item details from cached menu list instantly
+  try {
+    const cachedItems = localStorage.getItem('gdh_cached_menu_items');
+    if (cachedItems) {
+      const list = JSON.parse(cachedItems);
+      const found = list.find(i => i.id === id);
+      if (found) {
+        item = found;
+        item.addons = Array.isArray(item.addons) ? item.addons : [];
+        render();
+      }
+    }
+  } catch (e) {
+    console.warn('[Cache] Error loading cached item details:', e);
+  }
+
+  // 2. Fetch fresh details from Supabase in the background
   const sb = getSupabase();
   const { data, error } = await sb.from('menu_items').select('*, categories(name)').eq('id', id).single();
-  if (error || !data) { location.href = 'menu.html'; return; }
+  
+  if (error || !data) {
+    // If we couldn't load fresh data and have no cached item, redirect back
+    if (!item) { location.href = 'menu.html'; return; }
+    return;
+  }
 
-  item = data;
-  item.addons = Array.isArray(item.addons) ? item.addons : [];
-  render();
+  // 3. Re-render only if data has changed or if it hasn't rendered yet
+  const dataChanged = JSON.stringify(data) !== JSON.stringify(item);
+  if (dataChanged || !item) {
+    item = data;
+    item.addons = Array.isArray(item.addons) ? item.addons : [];
+    render();
+  }
 }
 
 function getAddonTotal() {
