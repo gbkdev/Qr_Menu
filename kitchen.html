@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#121212">
+<title>Kitchen Dashboard — Grand Dima Hotel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/global.css">
+<style>
+/* Fullscreen Dashboard styling */
+body {
+  background: var(--bg-primary);
+  color: var(--text-main);
+  max-width: 100%;
+}
+
+.kitchen-header {
+  background: var(--bg-surface);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 800;
+  box-shadow: var(--shadow-sm);
+}
+
+.kitchen-header h1 {
+  font-size: 1.25rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kitchen-clock {
+  font-size: 0.9rem;
+  color: var(--text-subtle);
+  font-family: monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(27, 138, 90, 0.15);
+  border: 1px solid rgba(27, 138, 90, 0.35);
+  color: #2DD4A0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.live-dot-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2DD4A0;
+  animation: pulseGreen 1.5s infinite;
+}
+
+@keyframes pulseGreen {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Tabs list */
+.kitchen-tabs-wrap {
+  position: sticky;
+  top: 60px;
+  z-index: 750;
+  background: var(--bg-surface);
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.kitchen-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.kitchen-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.ktab {
+  padding: 16px 24px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2.5px solid transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ktab:hover {
+  color: var(--gold-light);
+}
+
+.ktab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.ktab-count {
+  background: var(--gold);
+  color: #1C1A17;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(200, 169, 110, 0.2);
+}
+
+.ktab-count.red {
+  background: var(--danger);
+  color: white;
+  box-shadow: 0 2px 6px rgba(217, 70, 62, 0.3);
+  animation: pulseAlert 2s infinite;
+}
+
+@keyframes pulseAlert {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* Board Grid */
+.kitchen-board {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Order ticket card */
+.order-ticket {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--bounce);
+  animation: ticketIn 0.4s var(--bounce) forwards;
+}
+
+@keyframes ticketIn {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.order-ticket:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.order-ticket.new-order {
+  border-color: var(--gold);
+  animation: ticketGlow 1.5s infinite alternate;
+}
+
+@keyframes ticketGlow {
+  0% { box-shadow: 0 0 5px rgba(200,169,110,0.1); }
+  100% { box-shadow: 0 0 20px rgba(200,169,110,0.3); }
+}
+
+.order-ticket.urgent {
+  border-color: var(--danger);
+}
+
+.ticket-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.ticket-location {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-main);
+}
+
+.ticket-id {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-family: monospace;
+  margin-top: 4px;
+}
+
+.ticket-time {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  text-align: right;
+}
+
+.ticket-elapsed {
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ticket-elapsed.warn {
+  color: #FFAE33;
+  background: rgba(192, 117, 26, 0.12);
+}
+
+.ticket-elapsed.danger {
+  color: #FF6B6B;
+  background: rgba(217, 70, 62, 0.15);
+  animation: flashRed 1s infinite alternate;
+}
+
+@keyframes flashRed {
+  0% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.ticket-body {
+  padding: 20px;
+  flex: 1;
+}
+
+.ticket-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.ticket-item:last-child {
+  border-bottom: none;
+}
+
+.ticket-item-qty {
+  width: 28px;
+  height: 28px;
+  background: var(--gold);
+  color: #1C1A17;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.ticket-item-body {
+  flex: 1;
+}
+
+.ticket-item-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.ticket-item-addons {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  margin-top: 4px;
+}
+
+.ticket-item-instructions {
+  font-size: 0.78rem;
+  color: #FFAE33;
+  font-style: italic;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(192, 117, 26, 0.08);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ticket-notes {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: rgba(192, 117, 26, 0.08);
+  border-left: 3px solid var(--warning);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.82rem;
+  color: #FFAE33;
+  font-style: italic;
+}
+
+.ticket-actions {
+  padding: 16px 20px;
+  display: flex;
+  gap: 10px;
+  border-top: 1.5px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+.kbtn {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kbtn:active {
+  transform: scale(0.95);
+}
+
+.kbtn-accept {
+  background: var(--info);
+  color: white;
+  box-shadow: 0 4px 10px rgba(34, 112, 184, 0.2);
+}
+
+.kbtn-accept:hover {
+  background: #2B7CB9;
+}
+
+.kbtn-prepare {
+  background: var(--gold);
+  color: #1C1A17;
+  box-shadow: 0 4px 10px rgba(200, 169, 110, 0.2);
+}
+
+.kbtn-prepare:hover {
+  background: var(--gold-light);
+}
+
+.kbtn-ready {
+  background: var(--success);
+  color: white;
+  box-shadow: 0 4px 10px rgba(27, 138, 90, 0.2);
+}
+
+.kbtn-ready:hover {
+  background: #1F9C66;
+}
+
+.kbtn-reject {
+  background: rgba(217, 70, 62, 0.12);
+  border: 1px solid rgba(217, 70, 62, 0.35);
+  color: #FF6B6B;
+}
+
+.kbtn-reject:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.kbtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.sound-toggle {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+}
+
+.sound-toggle:hover {
+  border-color: var(--gold);
+  color: var(--text-main);
+}
+</style>
+</head>
+<body class="dark-mode">
+<script>
+  (function() {
+    const theme = localStorage.getItem('gdh_theme') || 'dark';
+    if (theme === 'light') document.body.classList.remove('dark-mode');
+  })();
+</script>
+
+<!-- Header -->
+<div class="kitchen-header">
+  <div>
+    <h1><i class="ti ti-chef-hat" style="color:var(--gold)"></i> Kitchen Board</h1>
+    <div class="kitchen-clock" id="kitchenClock">—:—:—</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+      <i class="ti ti-sun"></i>
+    </button>
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+      <i class="ti ti-volume" id="soundIcon"></i> Sound Alerts
+    </button>
+    <div class="live-badge">
+      <div class="live-dot-green"></div>
+      Live Sync
+    </div>
+  </div>
+</div>
+
+<!-- Category Tabs -->
+<div class="kitchen-tabs-wrap">
+  <div class="kitchen-tabs" id="kitchenTabs">
+    <button class="ktab active" data-filter="Pending" onclick="setFilter('Pending', this)">
+      <i class="ti ti-clock"></i> New Orders <span class="ktab-count red" id="count-Pending">0</span>
+    </button>
+    <button class="ktab" data-filter="Accepted" onclick="setFilter('Accepted', this)">
+      <i class="ti ti-circle-check"></i> Accepted <span class="ktab-count" id="count-Accepted">0</span>
+    </button>
+    <button class="ktab" data-filter="Preparing" onclick="setFilter('Preparing', this)">
+      <i class="ti ti-chef-hat"></i> Preparing <span class="ktab-count" id="count-Preparing">0</span>
+    </button>
+    <button class="ktab" data-filter="Ready" onclick="setFilter('Ready', this)">
+      <i class="ti ti-bell"></i> Ready <span class="ktab-count" id="count-Ready">0</span>
+    </button>
+    <button class="ktab" data-filter="all" onclick="setFilter('all', this)">
+      <i class="ti ti-list"></i> All Active
+    </button>
+  </div>
+</div>
+
+<!-- Grid Board -->
+<div class="kitchen-board" id="kitchenBoard">
+  <div class="board-empty" style="width:100%">
+    <div class="spinner" style="width:40px;height:40px;border-color:#202020;border-top-color:var(--gold)"></div>
+    <p style="color:var(--text-subtle)">Preparing Kitchen dashboard…</p>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script>
+let allOrders = {};
+let currentFilter = 'Pending';
+let soundEnabled = localStorage.getItem('gdh_kitchen_sound') !== 'false';
+let audioCtx = null;
+
+// Clock updates
+function updateClock() {
+  document.getElementById('kitchenClock').textContent =
+    new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Set initial icon on load
+function initSoundUI() {
+  const icon = document.getElementById('soundIcon');
+  if (icon) icon.className = `ti ti-volume${soundEnabled ? '' : '-off'}`;
+}
+initSoundUI();
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('gdh_kitchen_sound', soundEnabled);
+  document.getElementById('soundIcon').className = `ti ti-volume${soundEnabled ? '' : '-off'}`;
+  toast(soundEnabled ? 'Chime sound notifications enabled' : 'Sound alerts muted');
+}
+
+// Play synthesized kitchen bell/ding chime using Web Audio API
+function playAlert(type = 'new') {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Play dual oscillator chime
+    const playChime = (freq, duration, delay) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + delay + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + duration);
+    };
+
+    if (type === 'new') {
+      // High double chime (E5 -> A5)
+      playChime(659.25, 0.4, 0);
+      playChime(880, 0.6, 0.12);
+    } else {
+      // Neutral transaction chime (A5)
+      playChime(880, 0.4, 0);
+    }
+  } catch (e) {
+    console.error('Audio synthesizer error:', e);
+  }
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.ktab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderBoard();
+}
+
+function getElapsed(createdAt) {
+  const mins = Math.floor((Date.now() - new Date(createdAt)) / 60000);
+  if (mins < 1) return { text: 'Just now', cls: '' };
+  if (mins < 10) return { text: `${mins}m ago`, cls: '' };
+  if (mins < 20) return { text: `${mins}m ago`, cls: 'warn' };
+  return { text: `${mins}m ago`, cls: 'danger' };
+}
+
+function renderBoard() {
+  const board = document.getElementById('kitchenBoard');
+  const ACTIVE = ['Pending', 'Accepted', 'Preparing', 'Ready'];
+
+  let orders = Object.values(allOrders)
+    .filter(o => ACTIVE.includes(o.status))
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+  // Update Badge Counts
+  ['Pending', 'Accepted', 'Preparing', 'Ready'].forEach(s => {
+    const el = document.getElementById(`count-${s}`);
+    if (el) el.textContent = orders.filter(o => o.status === s).length;
+  });
+
+  if (currentFilter !== 'all') {
+    orders = orders.filter(o => o.status === currentFilter);
+  }
+
+  if (!orders.length) {
+    board.innerHTML = `
+      <div class="board-empty" style="width:100%; grid-column: 1/-1;">
+        <i class="ti ti-circle-check" style="color:var(--success)"></i>
+        <h3>Order Board Clear</h3>
+        <p>No ${currentFilter === 'all' ? 'active' : currentFilter.toLowerCase()} orders currently queueing.</p>
+      </div>`;
+    return;
+  }
+
+  board.innerHTML = orders.map(o => renderTicket(o)).join('');
+}
+
+function renderTicket(order) {
+  const elapsed = getElapsed(order.created_at);
+  const short = order.id.slice(-6).toUpperCase();
+  const items = order.order_items || [];
+  const isUrgent = elapsed.cls === 'danger';
+
+  let itemsHtml = items.map(oi => {
+    const addons = Array.isArray(oi.selected_addons) && oi.selected_addons.length
+      ? oi.selected_addons.map(a => a.name).join(', ') : '';
+    return `
+      <div class="ticket-item">
+        <div class="ticket-item-qty">${oi.quantity}</div>
+        <div class="ticket-item-body">
+          <div class="ticket-item-name">${esc(oi.item_name)}</div>
+          ${addons ? `<div class="ticket-item-addons">${esc(addons)}</div>` : ''}
+          ${oi.special_instructions ? `
+            <div class="ticket-item-instructions">
+              <i class="ti ti-alert-triangle"></i> ${esc(oi.special_instructions)}
+            </div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  let actions = '';
+  if (order.status === 'Pending') {
+    actions = `
+      <button class="kbtn kbtn-accept" onclick="updateStatus('${order.id}','Accepted')">
+        <i class="ti ti-check"></i> Accept
+      </button>
+      <button class="kbtn kbtn-reject" onclick="updateStatus('${order.id}','Rejected')">
+        <i class="ti ti-x"></i> Cancel
+      </button>`;
+  } else if (order.status === 'Accepted') {
+    actions = `
+      <button class="kbtn kbtn-prepare" onclick="updateStatus('${order.id}','Preparing')">
+        <i class="ti ti-chef-hat"></i> Start Prep
+      </button>`;
+  } else if (order.status === 'Preparing') {
+    actions = `
+      <button class="kbtn kbtn-ready" onclick="updateStatus('${order.id}','Ready')">
+        <i class="ti ti-bell"></i> Mark Ready
+      </button>`;
+  } else if (order.status === 'Ready') {
+    actions = `
+      <button class="kbtn kbtn-ready" onclick="updateStatus('${order.id}','Delivered')" style="background:var(--text-subtle);color:#1c1a17">
+        <i class="ti ti-circle-check"></i> Deliver
+      </button>`;
+  }
+
+  return `
+    <div class="order-ticket ${isUrgent ? 'urgent' : ''}" id="ticket-${order.id}">
+      <div class="ticket-header">
+        <div>
+          <div class="ticket-location">${esc(order.location_label || 'Order')}</div>
+          <div class="ticket-id">#${short}</div>
+        </div>
+        <div class="ticket-time">
+          <div>${fmtTime(order.created_at)}</div>
+          <div class="ticket-elapsed ${elapsed.cls}">${elapsed.text}</div>
+        </div>
+      </div>
+      <div class="ticket-body">
+        <div class="order-items-list">${itemsHtml}</div>
+        ${order.notes ? `<div class="ticket-notes"><i class="ti ti-note"></i> ${esc(order.notes)}</div>` : ''}
+      </div>
+      ${actions ? `<div class="ticket-actions">${actions}</div>` : ''}
+    </div>`;
+}
+
+async function updateStatus(orderId, newStatus) {
+  const btns = document.querySelectorAll(`#ticket-${orderId} .kbtn`);
+  btns.forEach(b => b.disabled = true);
+
+  const sb = getSupabase();
+  const { error } = await sb
+    .from('orders')
+    .update({ status: newStatus })
+    .eq('id', orderId);
+
+  if (error) {
+    toast('Failed to update ticket status', 'error');
+    btns.forEach(b => b.disabled = false);
+    return;
+  }
+
+  if (allOrders[orderId]) allOrders[orderId].status = newStatus;
+
+  if (newStatus === 'Rejected' || newStatus === 'Delivered') {
+    delete allOrders[orderId];
+  }
+
+  playAlert('action');
+  toast(`Order updated: ${newStatus}`, 'success');
+  renderBoard();
+}
+
+async function loadOrders() {
+  const sb = getSupabase();
+  const { data } = await sb
+    .from('orders')
+    .select('*, order_items(*)')
+    .in('status', ['Pending', 'Accepted', 'Preparing', 'Ready'])
+    .order('created_at');
+
+  (data || []).forEach(o => { allOrders[o.id] = o; });
+  renderBoard();
+
+  // Subscriptions
+  sb.channel('kitchen-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, async payload => {
+      const order = payload.new;
+      const { data: items } = await sb.from('order_items').select('*').eq('order_id', order.id);
+      order.order_items = items || [];
+      allOrders[order.id] = order;
+      playAlert('new');
+      toast(`🆕 New Order — ${order.location_label}`, 'success');
+      renderBoard();
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
+      const updated = payload.new;
+      if (allOrders[updated.id]) {
+        updated.order_items = allOrders[updated.id].order_items;
+        allOrders[updated.id] = updated;
+      }
+      if (['Rejected', 'Delivered'].includes(updated.status)) {
+        delete allOrders[updated.id];
+      }
+      renderBoard();
+    })
+    .subscribe();
+}
+
+// Keep time calculations fresh
+setInterval(renderBoard, 45000);
+
+loadOrders();
+</script>
+</body>
+</html>

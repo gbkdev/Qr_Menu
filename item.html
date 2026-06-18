@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Item — Grand Dima Hotel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/global.css">
+<style>
+body {
+  background: var(--bg-primary);
+}
+
+/* Centered Plate Header layout */
+.item-hero-container {
+  padding: 40px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: var(--bg-surface);
+}
+
+.item-hero-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--bg-surface-glass);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--gold);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--bounce);
+  -webkit-tap-highlight-color: transparent;
+  z-index: 10;
+}
+
+.item-hero-back:hover {
+  border-color: var(--gold);
+  background: rgba(230, 161, 59, 0.1);
+  transform: scale(1.08);
+}
+
+/* Clipped circular plate on item page */
+.item-plate-box {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 4px solid var(--gold);
+  padding: 4px;
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transition: transform 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.item-plate-box img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.item-plate-box:hover {
+  transform: rotate(6deg) scale(1.03);
+}
+
+.item-body {
+  padding: 16px 24px 150px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.item-name {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.item-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.item-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin-bottom: 32px;
+  text-align: center;
+  max-width: 340px;
+  font-weight: 300;
+}
+
+/* Customizer Sections */
+.addons-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+  text-align: left;
+}
+
+.addons-title {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.addon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition);
+}
+
+.addon-row:last-child {
+  border-bottom: none;
+}
+
+.addon-row:hover {
+  transform: translateX(4px);
+}
+
+.addon-check {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--text-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--bounce);
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.addon-row[aria-checked="true"] .addon-check {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.addon-check::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: 2.5px solid #000000;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.25s var(--bounce);
+}
+
+.addon-row[aria-checked="true"] .addon-check::after {
+  transform: rotate(45deg) scale(1) translateY(-1px);
+}
+
+.addon-info {
+  flex: 1;
+  margin-left: 14px;
+}
+
+.addon-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.addon-price {
+  font-size: 0.82rem;
+  color: var(--gold-light);
+  margin-top: 3px;
+}
+
+/* Instructions */
+.instructions-wrap {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.instructions-wrap .addons-title {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.instructions-wrap textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+/* Bottom Actions bar tray */
+.item-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
+  background: var(--bg-surface-glass);
+  border-top: 1.5px solid var(--border-color);
+  z-index: 800;
+  backdrop-filter: blur(25px);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.item-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+
+.item-total-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.item-total-label {
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.item-total-price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+.add-cart-btn {
+  flex: 1;
+}
+</style>
+</head>
+<body class="dark-mode">
+<script>
+  (function() {
+    const theme = localStorage.getItem('gdh_theme') || 'dark';
+    if (theme === 'light') document.body.classList.remove('dark-mode');
+  })();
+</script>
+
+<div id="pageContent">
+  <div class="loading-screen"><div class="spinner"></div><p>Loading dish details...</p></div>
+</div>
+
+<div class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script>
+let item = null;
+let selectedAddons = [];
+let qty = 1;
+
+async function loadItem() {
+  const id = getParam('id');
+  if (!id) { location.href = 'menu.html'; return; }
+
+  const sb = getSupabase();
+  const { data, error } = await sb.from('menu_items').select('*, categories(name)').eq('id', id).single();
+  if (error || !data) { location.href = 'menu.html'; return; }
+
+  item = data;
+  item.addons = Array.isArray(item.addons) ? item.addons : [];
+  render();
+}
+
+function getAddonTotal() {
+  return selectedAddons.reduce((sum, a) => sum + (a.price || 0), 0);
+}
+
+function getLineTotal() {
+  return (item.price + getAddonTotal()) * qty;
+}
+
+function render() {
+  document.title = `${item.name} — Grand Dima Hotel`;
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="item-hero-container">
+      <button class="item-hero-back" onclick="history.back()" aria-label="Back to menu">
+        <i class="ti ti-arrow-left"></i>
+      </button>
+      <button id="themeToggle" class="theme-toggle-btn" style="position: absolute; top: 20px; right: 20px;" aria-label="Toggle theme">
+        <i class="ti ti-sun"></i>
+      </button>
+      <div class="item-plate-box">
+        <img src="${esc(item.image_url || '')}" alt="${esc(item.name)}"
+          onerror="this.parentElement.innerHTML='<div class=\'img-fallback\' style=\'height:220px\'><i class=\'ti ti-tools-kitchen-2\' style=\'font-size:56px\'></i></div>'">
+      </div>
+    </div>
+
+    <div class="item-body">
+      <h1 class="item-name">${esc(item.name)}</h1>
+      <div class="item-meta">
+        <span class="item-price" id="basePrice">${fmtPrice(item.price)}</span>
+        <span class="badge badge-gold"><i class="ti ti-clock"></i> ${item.prep_time_minutes}m</span>
+        ${item.popular ? '<span class="badge badge-gold"><i class="ti ti-star-filled"></i> Popular</span>' : ''}
+        <span class="badge badge-muted">${esc(item.categories?.name || 'Main')}</span>
+      </div>
+      <p class="item-desc">${esc(item.description || 'Our signature recipe prepared fresh by culinary experts.')}</p>
+
+      ${item.addons.length ? `
+        <div class="addons-section">
+          <div class="addons-title">Customize your order</div>
+          ${item.addons.map((a, i) => `
+            <div class="addon-row" onclick="toggleAddon(${i})" role="checkbox" aria-checked="false" id="addon-row-${i}">
+              <div class="addon-check" id="addon-check-${i}"></div>
+              <div class="addon-info">
+                <div class="addon-name">${esc(a.name)}</div>
+                ${a.price > 0 ? `<div class="addon-price">+ ${fmtPrice(a.price)}</div>` : '<div class="addon-price">No extra charge</div>'}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="instructions-wrap">
+        <div class="addons-title">Special Request</div>
+        <textarea class="form-control" id="specialInstructions" placeholder="E.g. no onions, extra sauce, mild prep..."></textarea>
+      </div>
+    </div>
+
+    <div class="item-bottom-bar">
+      <div class="item-bottom-inner">
+        <div class="qty-selector">
+          <button class="qty-btn" onclick="changeQty(-1)" aria-label="Decrease quantity">
+            <i class="ti ti-minus"></i>
+          </button>
+          <span class="qty-value" id="qtyDisplay">1</span>
+          <button class="qty-btn" onclick="changeQty(1)" aria-label="Increase quantity">
+            <i class="ti ti-plus"></i>
+          </button>
+        </div>
+        
+        <div class="item-total-info">
+          <div class="item-total-label">Total Price</div>
+          <div class="item-total-price" id="lineTotal">${fmtPrice(item.price)}</div>
+        </div>
+
+        <button class="btn btn-gold add-cart-btn" onclick="addItemToCart()">
+          <i class="ti ti-shopping-cart-plus"></i>
+          Add to Order
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function toggleAddon(i) {
+  const addon = item.addons[i];
+  const row = document.getElementById(`addon-row-${i}`);
+  const exists = selectedAddons.findIndex(a => a.name === addon.name);
+  if (exists >= 0) {
+    selectedAddons.splice(exists, 1);
+    row.setAttribute('aria-checked', 'false');
+    row.style.background = 'transparent';
+  } else {
+    selectedAddons.push(addon);
+    row.setAttribute('aria-checked', 'true');
+    row.style.background = 'rgba(200, 169, 110, 0.05)';
+  }
+  playChimeSound('click');
+  updateTotals();
+}
+
+function changeQty(delta) {
+  qty = Math.max(1, qty + delta);
+  document.getElementById('qtyDisplay').textContent = qty;
+  updateTotals();
+  
+  // Rotating visual plate micro-animation
+  const plate = document.querySelector('.item-plate-box img');
+  if (plate) {
+    plate.style.transform = `rotate(${qty * 12}deg) scale(1.05)`;
+    plate.style.transition = 'transform 0.4s var(--bounce)';
+    setTimeout(() => {
+      plate.style.transform = `rotate(${qty * 12}deg) scale(1)`;
+    }, 400);
+  }
+  playChimeSound('click');
+}
+
+function updateTotals() {
+  const el = document.getElementById('lineTotal');
+  if (el) {
+    el.textContent = fmtPrice(getLineTotal());
+    el.style.transform = 'scale(1.1)';
+    el.style.transition = 'transform 0.15s ease';
+    setTimeout(() => {
+      el.style.transform = 'scale(1)';
+    }, 150);
+  }
+}
+
+function addItemToCart() {
+  const instructions = document.getElementById('specialInstructions')?.value.trim() || '';
+  const unitPrice = item.price + getAddonTotal();
+  addToCart({
+    menu_item_id: item.id,
+    name: item.name,
+    image_url: item.image_url,
+    unit_price: unitPrice,
+    quantity: qty,
+    subtotal: unitPrice * qty,
+    special_instructions: instructions,
+    selected_addons: [...selectedAddons],
+  });
+  playChimeSound('success');
+  toast(`${item.name} added to cart`, 'success');
+  setTimeout(() => location.href = 'menu.html', 750);
+}
+
+loadItem().catch(() => {
+  document.getElementById('pageContent').innerHTML = `
+    <div class="empty-state" style="min-height:100dvh">
+      <i class="ti ti-alert-triangle"></i>
+      <h3>Dish details not found</h3>
+      <a href="menu.html" class="btn btn-gold mt-16">Back to Menu</a>
+    </div>`;
+});
+</script>
+</body>
+</html>

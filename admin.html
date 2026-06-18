@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0A0A">
+  <title>Admin — Grand Dima Hotel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/global.css">
+  <script src="js/qrcode.min.js"></script>
+  <style>
+    body {
+      background: var(--bg-primary);
+      max-width: 100%;
+    }
+
+    .admin-shell {
+      display: flex;
+      min-height: 100dvh;
+    }
+
+    /* ---- Sidebar navigation ---- */
+    .admin-sidebar {
+      width: 260px;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 950;
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border-right: 1.5px solid var(--border-color);
+    }
+
+    @media (max-width: 992px) {
+      .admin-sidebar {
+        transform: translateX(-100%);
+      }
+
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .admin-main {
+        margin-left: 0 !important;
+      }
+    }
+
+    .sidebar-logo {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-logo .hotel {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .sidebar-logo h2 {
+      font-size: 1.15rem;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-section-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-subtle);
+      padding: 16px 24px 6px;
+      font-weight: 600;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: var(--font-body);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sidebar-link i {
+      font-size: 20px;
+    }
+
+    .sidebar-link:hover {
+      background: rgba(200, 169, 110, 0.08);
+      color: var(--gold);
+    }
+
+    .sidebar-link.active {
+      background: rgba(200, 169, 110, 0.12);
+      color: var(--gold);
+      border-left: 3px solid var(--gold);
+      padding-left: 21px;
+    }
+
+    /* ---- Main dashboard container ---- */
+    .admin-main {
+      margin-left: 260px;
+      flex: 1;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-topbar {
+      background: var(--bg-surface);
+      border-bottom: 1.5px solid var(--border-color);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 800;
+    }
+
+    .admin-topbar h1 {
+      font-size: 1.35rem;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    @media (max-width: 992px) {
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    /* Layout Panels */
+    .admin-panel {
+      display: none;
+      padding: 32px;
+      animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      flex: 1;
+    }
+
+    .admin-panel.active {
+      display: block;
+    }
+
+    /* Stats dashboard tiles */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color var(--transition);
+    }
+
+    .stat-card:hover {
+      border-color: var(--gold);
+    }
+
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text-main);
+    }
+
+    .stat-icon-wrap {
+      width: 48px;
+      height: 48px;
+      background: rgba(200, 169, 110, 0.12);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--gold);
+    }
+
+    /* Admin Table Design */
+    .admin-table-wrap {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .admin-table-header {
+      padding: 20px 24px;
+      border-bottom: 1.5px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: rgba(120, 120, 120, 0.01);
+    }
+
+    .admin-table-header h2 {
+      font-size: 1.15rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 14px 24px;
+      background: rgba(120, 120, 120, 0.03);
+      border-bottom: 1.5px solid var(--border-color);
+    }
+
+    td {
+      padding: 14px 24px;
+      font-size: 0.9rem;
+      border-bottom: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(120, 120, 120, 0.02);
+    }
+
+    .item-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+    }
+
+    /* Drawer overlays */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal {
+      background: var(--bg-surface);
+      border-top: 2px solid var(--gold);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      width: 100%;
+      max-width: 550px;
+      max-height: 85dvh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.25rem;
+    }
+
+    .modal-close {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    /* Gold QR cards */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .qr-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: border-color var(--transition);
+    }
+
+    .qr-card:hover {
+      border-color: var(--gold);
+    }
+
+    .qr-card canvas {
+      width: 150px;
+      height: 150px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+    }
+
+    .qr-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .qr-type {
+      font-size: 0.72rem;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Switch styling */
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border-color);
+      border-radius: 15px;
+      transition: background var(--transition);
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--transition);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .toggle input:checked+.toggle-slider {
+      background: var(--success);
+    }
+
+    .toggle input:checked+.toggle-slider::before {
+      transform: translateX(22px);
+    }
+
+    /* Sidebar overlay background */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 900;
+    }
+
+    .sidebar-overlay.open {
+      display: block;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body class="dark-mode">
+  <script>
+    (function () {
+      const theme = localStorage.getItem('gdh_theme') || 'dark';
+      if (theme === 'light') document.body.classList.remove('dark-mode');
+    })();
+  </script>
+
+  <div class="admin-shell">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-logo">
+        <div class="hotel">Queen Burger</div>
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Overview</div>
+        <button class="sidebar-link active" onclick="showPanel('dashboard', this)">
+          <i class="ti ti-layout-dashboard"></i> Dashboard
+        </button>
+        <button class="sidebar-link" onclick="showPanel('orders', this)">
+          <i class="ti ti-receipt"></i> Orders Log
+        </button>
+
+        <div class="sidebar-section-label">Menu Customizer</div>
+        <button class="sidebar-link" onclick="showPanel('menu', this)">
+          <i class="ti ti-tools-kitchen-2"></i> Menu Items
+        </button>
+        <button class="sidebar-link" onclick="showPanel('categories', this)">
+          <i class="ti ti-tag"></i> Categories
+        </button>
+
+        <div class="sidebar-section-label">Dining Setup</div>
+        <button class="sidebar-link" onclick="showPanel('tables', this)">
+          <i class="ti ti-armchair"></i> Tables & Rooms
+        </button>
+        <button class="sidebar-link" onclick="showPanel('qr', this)">
+          <i class="ti ti-qrcode"></i> Custom QR Codes
+        </button>
+
+        <div class="sidebar-section-label">Links</div>
+        <a href="kitchen.html" class="sidebar-link" target="_blank">
+          <i class="ti ti-chef-hat"></i> Kitchen Screen <i class="ti ti-external-link"
+            style="font-size:12px;margin-left:auto"></i>
+        </a>
+        <a href="menu.html" class="sidebar-link" target="_blank">
+          <i class="ti ti-eye"></i> Guest Preview <i class="ti ti-external-link"
+            style="font-size:12px;margin-left:auto"></i>
+        </a>
+      </nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Main Section -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="menu-toggle" onclick="openSidebar()" aria-label="Open navigation sidebar">
+            <i class="ti ti-menu-2"></i>
+          </button>
+          <h1 id="panelTitle">Dashboard</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+            <i class="ti ti-sun"></i>
+          </button>
+          <div class="kitchen-clock" id="adminClock">—:—</div>
+        </div>
+      </div>
+
+      <!-- Dashboard Panel -->
+      <div class="admin-panel active" id="panel-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="spinner"></div>
+          </div>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <h2>Recent Guest Activities</h2>
+            <button class="btn btn-sm btn-outline" onclick="showPanel('orders', null)">See details</button>
+          </div>
+          <div id="recentOrdersTable">
+            <div class="loading-screen" style="min-height:200px">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Panel -->
+      <div class="admin-panel" id="panel-orders">
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <h2>Culinary Orders Log</h2>
+            <select id="orderFilter" class="form-control" style="width:auto;padding:8px 16px"
+              onchange="loadAllOrders()">
+              <option value="">Filter Status</option>
+              <option>Pending</option>
+              <option>Accepted</option>
+              <option>Preparing</option>
+              <option>Ready</option>
+              <option>Delivered</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+          <div id="allOrdersTable">
+            <div class="loading-screen" style="min-height:300px">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Panel -->
+      <div class="admin-panel" id="panel-menu">
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <h2>Delicacies Menu</h2>
+            <button class="btn btn-sm btn-gold" onclick="openItemModal(null)">
+              <i class="ti ti-plus"></i> Add Item
+            </button>
+          </div>
+          <div id="menuItemsTable">
+            <div class="loading-screen" style="min-height:300px">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Panel -->
+      <div class="admin-panel" id="panel-categories">
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <h2>Dish Categories</h2>
+            <button class="btn btn-sm btn-gold" onclick="openCatModal(null)">
+              <i class="ti ti-plus"></i> Add Category
+            </button>
+          </div>
+          <div id="categoriesTable">
+            <div class="loading-screen" style="min-height:200px">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tables Panel -->
+      <div class="admin-panel" id="panel-tables">
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <h2>Physical Dining Layout</h2>
+            <button class="btn btn-sm btn-gold" onclick="openTableModal(null)">
+              <i class="ti ti-plus"></i> Add Layout
+            </button>
+          </div>
+          <div id="tablesTable">
+            <div class="loading-screen" style="min-height:200px">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Panel -->
+      <div class="admin-panel" id="panel-qr">
+        <div
+          style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <h2 style="font-size:1.1rem;margin-bottom:4px">Custom QR Codes</h2>
+            <p style="font-size:0.88rem;color:var(--text-muted)">Generates gold themed QR links for guests at designated
+              tables.</p>
+          </div>
+          <input id="qrBaseUrl" class="form-control" style="max-width:300px"
+            placeholder="https://yourdomain.com/menu.html">
+        </div>
+        <div class="qr-grid" id="qrGrid">
+          <div class="loading-screen" style="min-height:200px">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Add/Edit Item Modal -->
+  <div class="modal-overlay" id="itemModal" style="display:none" onclick="if(event.target===this)closeItemModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="itemModalTitle">Add Menu Item</h2>
+        <button class="modal-close" onclick="closeItemModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div id="itemModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div class="modal-overlay" id="catModal" style="display:none" onclick="if(event.target===this)closeCatModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="catModalTitle">Add Category</h2>
+        <button class="modal-close" onclick="closeCatModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div id="catModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Table Modal -->
+  <div class="modal-overlay" id="tableModal" style="display:none" onclick="if(event.target===this)closeTableModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="tableModalTitle">Add Table / Room</h2>
+        <button class="modal-close" onclick="closeTableModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div id="tableModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal-overlay" id="orderModal" style="display:none" onclick="if(event.target===this)closeOrderModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="orderModalTitle">Order Details</h2>
+        <button class="modal-close" onclick="closeOrderModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div id="orderModalBody" style="padding-bottom: 12px;"></div>
+    </div>
+  </div>
+
+  <div class="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Clock updates
+    function updateClock() {
+      document.getElementById('adminClock').textContent =
+        new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, day: 'numeric', month: 'short' });
+    }
+    setInterval(updateClock, 30000); updateClock();
+
+    function openSidebar() {
+      document.getElementById('adminSidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('open');
+    }
+    function closeSidebar() {
+      document.getElementById('adminSidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    }
+
+    // Nav Panels
+    const PANEL_TITLES = {
+      dashboard: 'Dashboard', orders: 'Culinary Orders Log', menu: 'Delicacies Menu',
+      categories: 'Dish Categories', tables: 'Dining Layout', qr: 'Custom QR Codes'
+    };
+    const PANEL_LOADERS = {
+      dashboard: loadDashboard, orders: loadAllOrders, menu: loadMenuItems,
+      categories: loadCategories, tables: loadTables, qr: loadQRPanel
+    };
+
+    function showPanel(name, btn) {
+      document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      document.getElementById(`panel-${name}`).classList.add('active');
+      document.getElementById('panelTitle').textContent = PANEL_TITLES[name];
+
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        // Sync active state sidebar buttons if clicked externally
+        document.querySelectorAll('.sidebar-link').forEach(l => {
+          if (l.innerText.toLowerCase().includes(PANEL_TITLES[name].toLowerCase())) l.classList.add('active');
+        });
+      }
+
+      PANEL_LOADERS[name]?.();
+      closeSidebar();
+    }
+
+    // ===== DASHBOARD =====
+    async function loadDashboard() {
+      const sb = getSupabase();
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+
+      const [{ data: todayOrders }, { data: allActive }, { count: menuCount }, { count: tableCount }] = await Promise.all([
+        sb.from('orders').select('*').gte('created_at', today.toISOString()),
+        sb.from('orders').select('status, grand_total').in('status', ['Pending', 'Accepted', 'Preparing', 'Ready']),
+        sb.from('menu_items').select('id', { count: 'exact', head: true }),
+        sb.from('tables').select('id', { count: 'exact', head: true }),
+      ]);
+
+      const todayRevenue = (todayOrders || []).filter(o => o.status === 'Delivered').reduce((s, o) => s + Number(o.grand_total), 0);
+      const activeOrders = (allActive || []).length;
+
+      document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-info">
+        <div class="stat-label">Today's Orders</div>
+        <div class="stat-value">${(todayOrders || []).length}</div>
+      </div>
+      <div class="stat-icon-wrap"><i class="ti ti-receipt"></i></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-info">
+        <div class="stat-label">Delivered Revenue</div>
+        <div class="stat-value" style="font-size:1.45rem">${fmtPrice(todayRevenue)}</div>
+      </div>
+      <div class="stat-icon-wrap"><i class="ti ti-cash"></i></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-info">
+        <div class="stat-label">Active Kitchen</div>
+        <div class="stat-value">${activeOrders}</div>
+      </div>
+      <div class="stat-icon-wrap"><i class="ti ti-chef-hat"></i></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-info">
+        <div class="stat-label">Total Tables</div>
+        <div class="stat-value">${tableCount || 0}</div>
+      </div>
+      <div class="stat-icon-wrap"><i class="ti ti-armchair"></i></div>
+    </div>
+  `;
+
+      const { data: recent } = await sb.from('orders').select('*').order('created_at', { ascending: false }).limit(10);
+      renderOrderTable('recentOrdersTable', recent || []);
+    }
+
+    // ===== ALL ORDERS =====
+    async function loadAllOrders() {
+      const sb = getSupabase();
+      const filter = document.getElementById('orderFilter')?.value;
+      let query = sb.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
+      if (filter) query = query.eq('status', filter);
+      const { data } = await query;
+      renderOrderTable('allOrdersTable', data || []);
+    }
+
+    function renderOrderTable(containerId, orders) {
+      if (!orders.length) {
+        document.getElementById(containerId).innerHTML = `<div class="empty-state"><i class="ti ti-receipt-off"></i><h3>No culinary orders logged</h3></div>`;
+        return;
+      }
+      const rows = orders.map(o => `
+    <tr>
+      <td><span style="font-family:monospace;font-weight:600">#${o.id.slice(-6).toUpperCase()}</span></td>
+      <td>${esc(o.location_label || 'Walk-in')}</td>
+      <td><span class="status-pill status-${o.status}">${o.status}</span></td>
+      <td class="text-gold" style="font-weight:700">${fmtPrice(o.grand_total)}</td>
+      <td style="font-size:0.8rem;color:var(--text-muted);font-weight:500">${fmtTime(o.created_at)}<br>${fmtDate(o.created_at)}</td>
+      <td>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-sm btn-outline" onclick="viewOrderDetails('${o.id}', '${o.id.slice(-6).toUpperCase()}')">View Items</button>
+          <select class="form-control" style="padding:6px 12px;font-size:0.85rem;width:auto;font-weight:600"
+            onchange="adminUpdateOrderStatus('${o.id}',this.value)">
+            ${['Pending', 'Accepted', 'Preparing', 'Ready', 'Delivered', 'Rejected'].map(s => `<option ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </td>
+    </tr>`).join('');
+
+      document.getElementById(containerId).innerHTML = `
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Reference</th><th>Dining Point</th><th>Status</th><th>Total Bill</th><th>Date & Time</th><th>Action</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </div>`;
+    }
+
+    async function adminUpdateOrderStatus(id, status) {
+      const sb = getSupabase();
+      const { error } = await sb.from('orders').update({ status }).eq('id', id);
+      if (error) { toast('Failed to modify order status', 'error'); return; }
+      playChimeSound('success');
+      toast(`Order updated: ${status}`, 'success');
+    }
+
+    function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
+    
+    async function viewOrderDetails(orderId, ref) {
+      document.getElementById('orderModalTitle').textContent = `Order #${ref}`;
+      const body = document.getElementById('orderModalBody');
+      body.innerHTML = `<div class="loading-screen" style="min-height:100px"><div class="spinner"></div></div>`;
+      document.getElementById('orderModal').style.display = 'flex';
+      
+      const sb = getSupabase();
+      const { data: items, error } = await sb.from('order_items').select('*').eq('order_id', orderId);
+      
+      if (error || !items) {
+        body.innerHTML = `<div class="empty-state"><h3>Error loading items</h3></div>`;
+        return;
+      }
+      
+      if (!items.length) {
+        body.innerHTML = `<p>No items found for this order.</p>`;
+        return;
+      }
+      
+      const rows = items.map(i => {
+        const addonsHtml = (i.selected_addons || []).map(a => `<div style="font-size:0.75rem;color:var(--text-muted)">+ ${esc(a.name)}</div>`).join('');
+        const noteHtml = i.special_instructions ? `<div style="font-size:0.75rem;color:var(--gold);margin-top:4px"><i class="ti ti-note"></i> ${esc(i.special_instructions)}</div>` : '';
+        return `
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border-color)">
+          <div>
+            <div style="font-weight:600">${i.quantity}x ${esc(i.item_name)}</div>
+            ${addonsHtml}
+            ${noteHtml}
+          </div>
+          <div style="font-weight:600;color:var(--gold)">${fmtPrice(i.subtotal)}</div>
+        </div>`;
+      }).join('');
+      
+      body.innerHTML = `<div style="display:flex;flex-direction:column;">${rows}</div>`;
+    }
+
+    // ===== MENU ITEMS =====
+    let categoriesList = [];
+    async function loadMenuItems() {
+      const sb = getSupabase();
+      const [{ data: items }, { data: cats }] = await Promise.all([
+        sb.from('menu_items').select('*, categories(name)').order('name'),
+        sb.from('categories').select('*').order('sort_order'),
+      ]);
+      categoriesList = cats || [];
+      renderMenuTable(items || []);
+    }
+
+    function renderMenuTable(items) {
+      if (!items.length) {
+        document.getElementById('menuItemsTable').innerHTML = `
+      <div class="empty-state">
+        <i class="ti ti-tools-kitchen-2"></i>
+        <h3>No delicacies found</h3>
+        <button class="btn btn-gold mt-16" onclick="openItemModal(null)">Create First Item</button>
+      </div>`;
+        return;
+      }
+
+      const rows = items.map(i => `
+    <tr>
+      <td><img class="item-thumb" src="${esc(i.image_url || '')}" onerror="this.style.background='var(--bg-primary)'"></td>
+      <td>
+        <div style="font-weight:600;font-size:0.95rem">${esc(i.name)}</div>
+        <div style="font-size:0.75rem;color:var(--text-subtle);font-weight:500">${esc(i.categories?.name || 'General')}</div>
+      </td>
+      <td class="text-gold" style="font-weight:600">${fmtPrice(i.price)}</td>
+      <td style="font-weight:500">${i.prep_time_minutes}m</td>
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${i.available ? 'checked' : ''} onchange="toggleItemAvail('${i.id}',this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-outline" style="margin-right:6px" onclick="openItemModal(${JSON.stringify(i).replace(/"/g, '&quot;')})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteItem('${i.id}')">Delete</button>
+      </td>
+    </tr>`).join('');
+
+      document.getElementById('menuItemsTable').innerHTML = `
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Thumb</th><th>Item Description</th><th>Base Price</th><th>Prep</th><th>Available</th><th>Actions</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+    }
+
+    async function toggleItemAvail(id, val) {
+      const sb = getSupabase();
+      playChimeSound('click');
+      await sb.from('menu_items').update({ available: val }).eq('id', id);
+      toast(val ? 'Item enabled on guest menu card' : 'Item hidden from guest menu card');
+    }
+
+    async function deleteItem(id) {
+      if (!confirm('Confirm deletion of menu item?')) return;
+      const sb = getSupabase();
+      playChimeSound('remove');
+      await sb.from('menu_items').delete().eq('id', id);
+      toast('Item deleted from record');
+      loadMenuItems();
+    }
+
+    // Add Item Modal builder
+    let editingItemId = null;
+    function openItemModal(item) {
+      editingItemId = item?.id || null;
+      document.getElementById('itemModalTitle').textContent = item ? 'Modify Menu Item' : 'Add Delicacy Item';
+      const catOptions = categoriesList.map(c => `<option value="${c.id}" ${item?.category_id === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+      const addonsJson = item ? JSON.stringify(item.addons || []) : '[]';
+
+      document.getElementById('itemModalBody').innerHTML = `
+    <div class="form-group"><label class="form-label">Dish Name *</label>
+      <input class="form-control" id="f-name" value="${esc(item?.name || '')}"></div>
+    <div class="form-group"><label class="form-label">Description</label>
+      <textarea class="form-control" id="f-desc">${esc(item?.description || '')}</textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="form-group"><label class="form-label">Price (${CURRENCY}) *</label>
+        <input class="form-control" id="f-price" type="number" value="${item?.price || ''}"></div>
+      <div class="form-group"><label class="form-label">Prep Time (min)</label>
+        <input class="form-control" id="f-prep" type="number" value="${item?.prep_time_minutes || 15}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Category</label>
+      <select class="form-control" id="f-cat">${catOptions}</select></div>
+    <div class="form-group"><label class="form-label">Image URL / Upload</label>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <input class="form-control" id="f-img" type="text" value="${esc(item?.image_url || '')}" placeholder="https://..." style="flex:1;" oninput="const p=document.getElementById('f-img-preview'); p.src=this.value; p.style.display=this.value?'block':'none'">
+        <label class="btn btn-outline" style="margin:0;cursor:pointer;padding:8px 16px;white-space:nowrap;">
+          <i class="ti ti-upload"></i> Upload
+          <input type="file" id="f-img-file" accept="image/*" style="display:none;" onchange="handleImageUpload(this)">
+        </label>
+      </div>
+      <img id="f-img-preview" src="${esc(item?.image_url || '')}" style="margin-top:12px;max-height:120px;border-radius:var(--radius-sm);object-fit:cover;display:${item?.image_url ? 'block' : 'none'}">
+    </div>
+    <div style="display:flex;gap:20px;margin:8px 0 20px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;font-weight:600">
+        <input type="checkbox" id="f-available" ${!item || item.available ? 'checked' : ''}> Available
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;font-weight:600">
+        <input type="checkbox" id="f-popular" ${item?.popular ? 'checked' : ''}> Popular Choice
+      </label>
+    </div>
+    <div class="form-group">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <label class="form-label" style="margin:0">Custom Add-ons</label>
+        <button class="btn btn-sm btn-outline" style="padding:4px 8px;font-size:0.75rem;" onclick="addAddonRow()">
+          <i class="ti ti-plus"></i> Add Item
+        </button>
+      </div>
+      <div id="addons-container" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+    <button class="btn btn-gold btn-block" onclick="saveItem()">
+      <i class="ti ti-device-floppy"></i> Save Recipe Item
+    </button>`;
+
+      const addonsList = item?.addons || [];
+      addonsList.forEach(a => addAddonRow(a.name, a.price));
+
+      document.getElementById('itemModal').style.display = 'flex';
+    }
+
+    function closeItemModal() { document.getElementById('itemModal').style.display = 'none'; }
+
+    function addAddonRow(name = '', price = '') {
+      const container = document.getElementById('addons-container');
+      const row = document.createElement('div');
+      row.className = 'addon-row-input';
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      row.innerHTML = `
+    <input class="form-control" placeholder="Add-on Name (e.g. Extra Egg)" value="${esc(name)}" style="flex:2">
+    <input class="form-control" type="number" placeholder="Price" value="${price}" style="flex:1">
+    <button class="btn btn-danger" style="padding:0 12px;" onclick="this.parentElement.remove()" title="Remove"><i class="ti ti-trash"></i></button>
+  `;
+      container.appendChild(row);
+    }
+
+    function handleImageUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
+          let width = img.width; let height = img.height;
+          if (width > height) {
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+          } else {
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+          }
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          document.getElementById('f-img').value = dataUrl;
+          const preview = document.getElementById('f-img-preview');
+          preview.src = dataUrl;
+          preview.style.display = 'block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function saveItem() {
+      const name = document.getElementById('f-name').value.trim();
+      const price = parseFloat(document.getElementById('f-price').value);
+      if (!name || isNaN(price)) { toast('Recipe name and base price are required', 'error'); return; }
+
+      let addons = [];
+      document.querySelectorAll('#addons-container .addon-row-input').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const addonName = inputs[0].value.trim();
+        const addonPrice = parseFloat(inputs[1].value);
+        if (addonName) {
+          addons.push({ name: addonName, price: isNaN(addonPrice) ? 0 : addonPrice });
+        }
+      });
+
+      const payload = {
+        name,
+        description: document.getElementById('f-desc').value.trim(),
+        price,
+        prep_time_minutes: parseInt(document.getElementById('f-prep').value) || 15,
+        category_id: document.getElementById('f-cat').value || null,
+        image_url: document.getElementById('f-img').value.trim() || null,
+        available: document.getElementById('f-available').checked,
+        popular: document.getElementById('f-popular').checked,
+        addons,
+      };
+
+      const sb = getSupabase();
+      let error;
+      if (editingItemId) {
+        ({ error } = await sb.from('menu_items').update(payload).eq('id', editingItemId));
+      } else {
+        ({ error } = await sb.from('menu_items').insert(payload));
+      }
+
+      if (error) { toast('Failed to commit item', 'error'); return; }
+      playChimeSound('success');
+      toast('Item saved successfully!', 'success');
+      closeItemModal();
+      loadMenuItems();
+    }
+
+    // ===== CATEGORIES =====
+    async function loadCategories() {
+      const sb = getSupabase();
+      const { data } = await sb.from('categories').select('*').order('sort_order');
+      const rows = (data || []).map(c => `
+    <tr>
+      <td><i class="ti ${c.icon || 'ti-star'}" style="font-size:22px;color:var(--gold)"></i></td>
+      <td style="font-weight:600">${esc(c.name)}</td>
+      <td style="font-weight:500">${c.sort_order}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" style="margin-right:6px" onclick="openCatModal(${JSON.stringify(c).replace(/"/g, '&quot;')})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteCat('${c.id}')">Delete</button>
+      </td>
+    </tr>`).join('');
+
+      document.getElementById('categoriesTable').innerHTML = `
+    <table><thead><tr><th>Icon</th><th>Category Tag</th><th>Sort Weight</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+    }
+
+    let editingCatId = null;
+    function openCatModal(cat) {
+      editingCatId = cat?.id || null;
+      document.getElementById('catModalTitle').textContent = cat ? 'Modify Category' : 'Create Category';
+      document.getElementById('catModalBody').innerHTML = `
+    <div class="form-group"><label class="form-label">Category Name *</label>
+      <input class="form-control" id="c-name" value="${esc(cat?.name || '')}"></div>
+    <div class="form-group"><label class="form-label">Icon Class (Tabler icon)</label>
+      <input class="form-control" id="c-icon" value="${esc(cat?.icon || 'ti-star')}" placeholder="ti-coffee">
+      <div style="font-size:0.75rem;color:var(--text-subtle);margin-top:4px">Browse labels at <a href="https://tabler.io/icons" target="_blank" style="color:var(--gold)">tabler.io/icons</a></div>
+    </div>
+    <div class="form-group"><label class="form-label">Sort Weight (Ascending)</label>
+      <input class="form-control" id="c-sort" type="number" value="${cat?.sort_order || 0}"></div>
+    <button class="btn btn-gold btn-block" onclick="saveCat()"><i class="ti ti-device-floppy"></i> Save Category</button>`;
+      document.getElementById('catModal').style.display = 'flex';
+    }
+    function closeCatModal() { document.getElementById('catModal').style.display = 'none'; }
+    async function saveCat() {
+      const name = document.getElementById('c-name').value.trim();
+      if (!name) { toast('Category name required', 'error'); return; }
+      const payload = { name, icon: document.getElementById('c-icon').value.trim(), sort_order: parseInt(document.getElementById('c-sort').value) || 0 };
+      const sb = getSupabase();
+      if (editingCatId) await sb.from('categories').update(payload).eq('id', editingCatId);
+      else await sb.from('categories').insert(payload);
+      playChimeSound('success');
+      toast('Category saved!', 'success');
+      closeCatModal();
+      loadCategories();
+    }
+    async function deleteCat(id) {
+      if (!confirm('Confirm deletion of category?')) return;
+      const sb = getSupabase();
+      playChimeSound('remove');
+      await sb.from('categories').delete().eq('id', id);
+      toast('Category removed'); loadCategories();
+    }
+
+    // ===== TABLES =====
+    async function loadTables() {
+      const sb = getSupabase();
+      const { data } = await sb.from('tables').select('*').order('label');
+      const rows = (data || []).map(t => `
+    <tr>
+      <td style="font-weight:600">${esc(t.label)}</td>
+      <td><span class="badge badge-gold">${t.type}</span></td>
+      <td style="font-family:monospace;font-size:0.85rem">${esc(t.identifier)}</td>
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${t.active ? 'checked' : ''} onchange="toggleTable('${t.id}',this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-danger" onclick="deleteTable('${t.id}')">Delete</button>
+      </td>
+    </tr>`).join('');
+
+      document.getElementById('tablesTable').innerHTML = `
+    <table><thead><tr><th>Location Label</th><th>Service Type</th><th>System Identifier</th><th>Active Status</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+    }
+
+    let editingTableId = null;
+    function openTableModal(t) {
+      editingTableId = t?.id || null;
+      document.getElementById('tableModalTitle').textContent = t ? 'Edit Dining Spot' : 'Add Dining Point';
+      document.getElementById('tableModalBody').innerHTML = `
+    <div class="form-group"><label class="form-label">Dining Identifier *</label>
+      <input class="form-control" id="t-label" value="${esc(t?.label || '')}" placeholder="E.g. Table 15 / Room 402"></div>
+    <div class="form-group"><label class="form-label">Service Category</label>
+      <select class="form-control" id="t-type">
+        <option ${t?.type === 'table' ? 'selected' : ''}>table</option>
+        <option ${t?.type === 'room' ? 'selected' : ''}>room</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">System Code (Auto-generated if blank)</label>
+      <input class="form-control" id="t-id" value="${esc(t?.identifier || '')}" placeholder="E.g. table-15">
+    </div>
+    <button class="btn btn-gold btn-block" onclick="saveTable()"><i class="ti ti-device-floppy"></i> Save Dining Spot</button>`;
+      document.getElementById('tableModal').style.display = 'flex';
+    }
+    function closeTableModal() { document.getElementById('tableModal').style.display = 'none'; }
+    async function saveTable() {
+      const label = document.getElementById('t-label').value.trim();
+      if (!label) { toast('Dining spot identifier required', 'error'); return; }
+      const type = document.getElementById('t-type').value;
+      let identifier = document.getElementById('t-id').value.trim();
+      if (!identifier) identifier = `${type}-${label.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+      const sb = getSupabase();
+      if (editingTableId) await sb.from('tables').update({ label, type, identifier }).eq('id', editingTableId);
+      else await sb.from('tables').insert({ label, type, identifier, active: true });
+      playChimeSound('success');
+      toast('Dining spot committed!', 'success');
+      closeTableModal();
+      loadTables();
+    }
+
+    async function toggleTable(id, val) {
+      const sb = getSupabase();
+      playChimeSound('click');
+      await sb.from('tables').update({ active: val }).eq('id', id);
+      toast(val ? 'Dining spot activated' : 'Dining spot deactivated');
+    }
+    async function deleteTable(id) {
+      if (!confirm('Confirm deletion of dining spot?')) return;
+      const sb = getSupabase();
+      playChimeSound('remove');
+      await sb.from('tables').delete().eq('id', id);
+      toast('Dining spot removed'); loadTables();
+    }
+
+    // ===== QR CODES (Gold themed on Obsidian Background!) =====
+    let qrTablesList = [];
+
+    async function loadQRPanel() {
+      const sb = getSupabase();
+      const { data: tables } = await sb.from('tables').select('*').eq('active', true).order('label');
+      qrTablesList = tables || [];
+
+      const baseUrlInput = document.getElementById('qrBaseUrl');
+      const baseUrl = baseUrlInput.value ||
+        `${location.origin}${location.pathname.replace('admin.html', 'menu.html')}`;
+      baseUrlInput.value = baseUrl;
+
+      // Render codes
+      await renderQRCodes();
+
+      // Re-render QR cards on URL modify
+      baseUrlInput.removeEventListener('input', renderQRCodes);
+      baseUrlInput.addEventListener('input', renderQRCodes);
+    }
+
+    async function renderQRCodes() {
+      const grid = document.getElementById('qrGrid');
+      grid.innerHTML = '';
+
+      const baseUrl = document.getElementById('qrBaseUrl').value.trim();
+      if (!baseUrl) return;
+
+      for (const t of qrTablesList) {
+        const param = t.type === 'room' ? `room=${t.identifier.replace('room-', '')}` : `table=${t.identifier.replace('table-', '')}`;
+        const url = `${baseUrl}?${param}`;
+
+        const card = document.createElement('div');
+        card.className = 'qr-card';
+        card.innerHTML = `
+      <canvas id="qr-${t.id}"></canvas>
+      <div class="qr-label">${esc(t.label)}</div>
+      <div class="qr-type">${t.type}</div>
+      <button class="btn btn-sm btn-outline" onclick="downloadQR('qr-${t.id}','${esc(t.label)}')">
+        <i class="ti ti-download"></i> Download
+      </button>`;
+        grid.appendChild(card);
+
+        try {
+          const canvas = card.querySelector('canvas');
+          await QRCode.toCanvas(canvas, url, {
+            width: 150, margin: 2,
+            color: { dark: '#C8A96E', light: '#141414' }
+          });
+        } catch (err) {
+          console.error('Failed to generate QR code for', t.label, err);
+        }
+      }
+    }
+
+    function downloadQR(canvasId, label) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `QR-${label.replace(/\s+/g, '-')}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // Start
+    const sbGlobal = getSupabase();
+    sbGlobal.channel('admin-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        if (document.getElementById('panel-dashboard').classList.contains('active')) loadDashboard();
+        if (document.getElementById('panel-orders').classList.contains('active')) loadAllOrders();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
+        if (document.getElementById('panel-menu').classList.contains('active')) loadMenuItems();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+        if (document.getElementById('panel-categories').classList.contains('active')) loadCategories();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tables' }, () => {
+        if (document.getElementById('panel-tables').classList.contains('active')) loadTables();
+        if (document.getElementById('panel-qr').classList.contains('active')) loadQRPanel();
+      })
+      .subscribe();
+
+    loadDashboard();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Cart — Grand Dima Hotel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/global.css">
+<style>
+/* ---- Cart Page Elements ---- */
+.cart-header {
+  background: var(--bg-surface-glass);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 800;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.cart-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-header h1 {
+  font-size: 1.35rem;
+  font-weight: 500;
+  font-family: var(--font-display);
+  color: var(--text-main);
+}
+
+.clear-cart-btn {
+  font-size: 0.8rem;
+  color: var(--danger);
+  background: none;
+  border: 1px solid rgba(226, 75, 74, 0.25);
+  cursor: pointer;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: 20px;
+  transition: all var(--transition);
+}
+
+.clear-cart-btn:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+/* Cart list cards */
+.cart-list {
+  padding: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin: 0 16px;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+  max-height: 180px;
+}
+
+.cart-item.slide-out {
+  transform: translateX(-105%);
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-width: 0;
+}
+
+.cart-item-img {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+.cart-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.cart-item-addons {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  margin-bottom: 4px;
+}
+
+.cart-item-instructions {
+  font-size: 0.78rem;
+  color: var(--warning);
+  font-style: italic;
+  margin-bottom: 8px;
+  background: rgba(186, 117, 23, 0.08);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  border-left: 2px solid var(--warning);
+}
+
+.cart-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.cart-item-price {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--gold);
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-main);
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cart-qty-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.cart-qty-val {
+  width: 20px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.remove-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--danger-bg);
+  border: none;
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.remove-btn:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Notes Section */
+.notes-section {
+  margin: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+
+.notes-section label {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Invoice Bill Summary */
+.order-summary {
+  margin: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-row.total {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-main);
+  padding-top: 14px;
+  border-top: 1.5px dashed var(--border-color);
+  margin-top: 14px;
+}
+
+/* Warnings */
+.location-warn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--warning-bg);
+  border: 1px solid rgba(186, 117, 23, 0.2);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin: 16px 16px 0;
+  font-size: 0.88rem;
+  color: #FFAE33;
+}
+
+/* Bottom Checkout Tray */
+.checkout-bar {
+  position: fixed;
+  bottom: calc(82px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 448px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  z-index: 800;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .checkout-bar {
+  background: rgba(15, 15, 15, 0.85);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+#placeOrderBtn {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: #121212;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(200, 169, 110, 0.25);
+  border-radius: 12px;
+  border: none;
+  transition: all var(--transition);
+}
+
+#placeOrderBtn:hover {
+  background: var(--gold-light);
+}
+
+#placeOrderBtn:active {
+  transform: scale(0.97);
+}
+
+/* Success Celebration screen overlay */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, var(--bg-surface) 0%, var(--bg-primary) 80%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 32px;
+  text-align: center;
+  animation: successFadeIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes successFadeIn {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.success-icon-wrap {
+  width: 96px;
+  height: 96px;
+  background: rgba(200, 169, 110, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.success-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--gold);
+  animation: spinSlow 12s linear infinite;
+}
+
+.success-order-id {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  font-family: monospace;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px;
+  border-radius: 6px;
+  margin-top: -6px;
+}
+
+.success-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 18px 24px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+</style>
+</head>
+<body class="dark-mode">
+<script>
+  (function() {
+    const theme = localStorage.getItem('gdh_theme') || 'dark';
+    if (theme === 'light') document.body.classList.remove('dark-mode');
+  })();
+</script>
+
+<!-- Header -->
+<div class="cart-header">
+  <div class="cart-header-inner">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="back-btn" onclick="history.back()" aria-label="Back to previous page">
+        <i class="ti ti-arrow-left"></i>
+      </button>
+      <h1>Your Cart</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+        <i class="ti ti-sun"></i>
+      </button>
+      <button class="clear-cart-btn" id="clearCartBtn" onclick="confirmClear()">Clear all</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main content list -->
+<div class="page-content" id="cartContent">
+  <div class="loading-screen"><div class="spinner"></div><p>Fetching order list…</p></div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+  <a href="menu.html" aria-label="Menu">
+    <i class="ti ti-tools-kitchen-2"></i>
+    <span>Menu</span>
+  </a>
+  <a href="cart.html" class="active" aria-label="Cart" style="position:relative">
+    <i class="ti ti-shopping-cart"></i>
+    <span>Cart</span>
+    <span class="cart-count" style="display:none"></span>
+  </a>
+  <a href="order-status.html" aria-label="My Orders">
+    <i class="ti ti-receipt"></i>
+    <span>My Orders</span>
+  </a>
+</nav>
+
+<div class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script>
+function renderCart() {
+  const cart = getCart();
+  const content = document.getElementById('cartContent');
+  const clearBtn = document.getElementById('clearCartBtn');
+  updateCartBadges();
+
+  if (!cart.length) {
+    clearBtn.style.display = 'none';
+    content.innerHTML = `
+      <div class="empty-state fade-in-up" style="min-height:55dvh">
+        <i class="ti ti-shopping-cart-off"></i>
+        <h3>Order cart is empty</h3>
+        <p>You haven't added any delicacies yet. Browse our premium menu card to add items.</p>
+        <a href="menu.html" class="btn btn-gold mt-16"><i class="ti ti-tools-kitchen-2"></i> View Menu</a>
+      </div>`;
+    return;
+  }
+
+  clearBtn.style.display = 'block';
+  const subtotal = getCartTotal();
+  const fee = subtotal * SERVICE_FEE_PERCENT;
+  const grandTotal = subtotal + fee;
+
+  const loc = getSavedLocation();
+  const locWarn = !loc ? `
+    <div class="location-warn fade-in-up">
+      <i class="ti ti-alert-triangle" style="font-size:20px;flex-shrink:0"></i>
+      <span>No dining location set. Please scan table QR code or specify notes during checkout.</span>
+    </div>` : '';
+
+  let itemsHtml = '';
+  cart.forEach(item => {
+    const addonText = item.selected_addons?.length
+      ? item.selected_addons.map(a => a.name).join(', ')
+      : '';
+    itemsHtml += `
+      <div class="cart-item fade-in-up" id="ci-${item.key}">
+        <img class="cart-item-img"
+          src="${esc(item.image_url || '')}" alt="${esc(item.name)}"
+          onerror="this.src='';this.style.background='var(--bg-primary)'">
+        <div class="cart-item-body">
+          <div class="cart-item-name">${esc(item.name)}</div>
+          ${addonText ? `<div class="cart-item-addons">${esc(addonText)}</div>` : ''}
+          ${item.special_instructions ? `<div class="cart-item-instructions">"${esc(item.special_instructions)}"</div>` : ''}
+          <div class="cart-item-footer">
+            <div class="cart-item-price">${fmtPrice(item.subtotal)}</div>
+            <div class="cart-item-actions">
+              <button class="cart-qty-btn" onclick="adjustQty('${item.key}', -1)" aria-label="Decrease quantity">
+                <i class="ti ti-minus"></i>
+              </button>
+              <span class="cart-qty-val">${item.quantity}</span>
+              <button class="cart-qty-btn" onclick="adjustQty('${item.key}', 1)" aria-label="Increase quantity">
+                <i class="ti ti-plus"></i>
+              </button>
+              <button class="remove-btn" onclick="removeItem('${item.key}')" aria-label="Remove item">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  content.innerHTML = `
+    ${locWarn}
+    <div class="cart-list">${itemsHtml}</div>
+
+    <div class="notes-section fade-in-up">
+      <label><i class="ti ti-note"></i> Special Dining Instructions</label>
+      <textarea class="form-control" id="orderNotes" placeholder="Delivery preferences, room placement details, scheduling requests...">${document.getElementById('orderNotesVal')?.value || ''}</textarea>
+    </div>
+
+    <div class="order-summary fade-in-up">
+      <div class="summary-row">
+        <span>Order Subtotal</span>
+        <span id="summarySubtotal">${fmtPrice(subtotal)}</span>
+      </div>
+      <div class="summary-row">
+        <span>Service Fee (${(SERVICE_FEE_PERCENT*100).toFixed(0)}%)</span>
+        <span id="summaryFee">${fmtPrice(fee)}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Grand Total</span>
+        <span id="summaryTotal" class="text-gold">${fmtPrice(grandTotal)}</span>
+      </div>
+    </div>
+
+    <div class="checkout-bar">
+      <button class="btn btn-gold btn-block btn-lg" id="placeOrderBtn" onclick="placeOrder()">
+        <i class="ti ti-send"></i>
+        Send to Kitchen · ${fmtPrice(grandTotal)}
+      </button>
+    </div>
+  `;
+}
+
+function adjustQty(key, delta) {
+  const cart = getCart();
+  const item = cart.find(c => c.key === key);
+  if (!item) return;
+  updateCartItemQty(key, item.quantity + delta);
+  renderCart();
+}
+
+function removeItem(key) {
+  const el = document.getElementById(`ci-${key}`);
+  playChimeSound('remove');
+  if (el) {
+    el.classList.add('slide-out');
+    setTimeout(() => {
+      removeFromCart(key);
+      toast('Item removed from cart');
+      renderCart();
+    }, 380);
+  } else {
+    removeFromCart(key);
+    renderCart();
+  }
+}
+
+function confirmClear() {
+  if (confirm('Clear entire food order cart?')) {
+    clearCart();
+    renderCart();
+  }
+}
+
+async function placeOrder() {
+  const cart = getCart();
+  if (!cart.length) return;
+
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<div class="spinner" style="width:20px;height:20px;border-width:2px"></div> Submitting…`;
+
+  const sb = getSupabase();
+  const loc = getSavedLocation();
+  const notes = document.getElementById('orderNotes')?.value.trim() || '';
+
+  const subtotal = getCartTotal();
+  const fee = subtotal * SERVICE_FEE_PERCENT;
+  const grandTotal = subtotal + fee;
+
+  try {
+    let tableId = null;
+    let locationLabel = 'Walk-in / Room';
+    if (loc) {
+      const { data: tableData } = await sb
+        .from('tables')
+        .select('id, label')
+        .eq('identifier', loc.identifier)
+        .single();
+      if (tableData) {
+        tableId = tableData.id;
+        locationLabel = tableData.label;
+      } else {
+        locationLabel = loc.label;
+      }
+    }
+
+    // Insert Order
+    const { data: order, error: orderErr } = await sb
+      .from('orders')
+      .insert({
+        table_id: tableId,
+        location_label: locationLabel,
+        status: 'Pending',
+        total: subtotal,
+        service_fee: fee,
+        grand_total: grandTotal,
+        notes,
+      })
+      .select()
+      .single();
+
+    if (orderErr) throw orderErr;
+
+    // Insert Order Items
+    const orderItems = cart.map(item => ({
+      order_id: order.id,
+      menu_item_id: item.menu_item_id,
+      item_name: item.name,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      subtotal: item.subtotal,
+      special_instructions: item.special_instructions || null,
+      selected_addons: item.selected_addons || [],
+    }));
+
+    const { error: itemsErr } = await sb.from('order_items').insert(orderItems);
+    if (itemsErr) throw itemsErr;
+
+    // Cache order details
+    localStorage.setItem('gdh_last_order', order.id);
+    const orderHistory = JSON.parse(localStorage.getItem('gdh_order_history') || '[]');
+    orderHistory.unshift(order.id);
+    localStorage.setItem('gdh_order_history', JSON.stringify(orderHistory.slice(0, 20)));
+
+    clearCart();
+    showSuccess(order.id, locationLabel, grandTotal);
+
+  } catch (err) {
+    console.error(err);
+    toast('Failed to post order. Try again.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = `<i class="ti ti-send"></i> Send to Kitchen · ${fmtPrice(grandTotal)}`;
+  }
+}
+
+function showSuccess(orderId, location, total) {
+  playChimeSound('success');
+  const short = orderId.slice(-6).toUpperCase();
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon-wrap"><i class="ti ti-circle-check"></i></div>
+      <h2>Order Transmitted!</h2>
+      <p class="success-order-id">Order #${short}</p>
+      <p style="color:var(--text-muted);font-size:0.95rem;max-width:280px;font-weight:300">
+        Your order is being reviewed by the chef. You can track preparation in real-time.
+      </p>
+      <div class="success-card">
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem">
+          <span style="color:var(--text-muted)">Location</span>
+          <strong style="color:var(--text-main)">${esc(location)}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-top:6px">
+          <span style="color:var(--text-muted)">Bill Charged</span>
+          <strong style="color:var(--gold)">${fmtPrice(total)}</strong>
+        </div>
+      </div>
+      <a href="order-status.html" class="btn btn-gold btn-block" style="max-width:320px;margin-top:12px">
+        <i class="ti ti-clock"></i> Track Order Live
+      </a>
+      <a href="menu.html" class="btn btn-outline btn-block" style="max-width:320px">
+        <i class="ti ti-tools-kitchen-2"></i> View Menu Card
+      </a>
+    </div>
+  `);
+}
+
+// Start
+renderCart();
+</script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1A1A1A">
+<title>Order Status — Grand Dima Hotel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="css/global.css">
+<style>
+/* ---- Status Page Styling ---- */
+.os-header {
+  background: var(--bg-surface);
+  color: var(--text-main);
+  padding: 28px 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.os-header h1 {
+  font-size: 1.45rem;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.os-header p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+.live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #2DD4A0;
+  margin-top: 10px;
+  background: rgba(27, 138, 90, 0.15);
+  border: 1px solid rgba(27, 138, 90, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.live-dot::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2DD4A0;
+  animation: pulseLive 1.5s infinite;
+}
+
+@keyframes pulseLive {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Order timeline card */
+.order-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin: 16px;
+  overflow: hidden;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+.order-card-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1.5px solid var(--border-color);
+  background: rgba(120, 120, 120, 0.02);
+}
+
+.order-id {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-family: monospace;
+  margin-top: 4px;
+}
+
+.order-card-body {
+  padding: 20px;
+}
+
+/* Redesigned Progress Timeline Stepper */
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 24px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  position: relative;
+}
+
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 4px, transparent 4px, transparent 8px);
+  z-index: 0;
+  transition: all 0.4s ease;
+}
+
+.step.done:not(:last-child)::after {
+  background: repeating-linear-gradient(to bottom, var(--gold) 0px, var(--gold) 4px, transparent 4px, transparent 8px);
+}
+
+.step-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  z-index: 1;
+  background: var(--bg-surface);
+  color: var(--text-subtle);
+  border: 1.5px solid var(--border-color);
+  transition: all 0.4s var(--bounce);
+}
+
+.step.done .step-icon {
+  background: var(--gold);
+  color: #121212;
+  border-color: var(--gold);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(200, 169, 110, 0.25);
+}
+
+.step.active .step-icon {
+  background: var(--text-main);
+  color: var(--bg-primary);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 6px var(--gold-glow);
+  animation: pulseNode 2s infinite;
+}
+
+@keyframes pulseNode {
+  0% { box-shadow: 0 0 0 0 rgba(200, 169, 110, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(200, 169, 110, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 169, 110, 0); }
+}
+
+.step.rejected .step-icon {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+  box-shadow: 0 4px 12px rgba(226, 75, 74, 0.3);
+}
+
+.step-body {
+  padding: 8px 0 24px;
+}
+
+.step-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-subtle);
+  transition: color var(--transition);
+}
+
+.step.active .step-label {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.step.done .step-label {
+  color: var(--text-muted);
+}
+
+.step-time {
+  font-size: 0.78rem;
+  color: var(--gold);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Items list breakdown */
+.order-items-list {
+  margin-top: 14px;
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border-color);
+  font-size: 0.9rem;
+  gap: 10px;
+}
+
+.order-item-row:last-child {
+  border-bottom: none;
+}
+
+.order-item-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.order-item-qty {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.order-item-price {
+  font-weight: 700;
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
+.order-item-addons {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  margin-top: 3px;
+}
+
+/* History Section */
+.history-section {
+  padding: 0 16px;
+  margin-bottom: 20px;
+}
+
+.history-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  margin-top: 28px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.history-item:hover {
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.history-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-item-id {
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: var(--text-subtle);
+}
+
+/* Rejected banner */
+.rejected-banner {
+  background: var(--danger-bg);
+  border: 1px solid rgba(217, 70, 62, 0.25);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: #FF6B6B;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body class="dark-mode">
+<script>
+  (function() {
+    const theme = localStorage.getItem('gdh_theme') || 'dark';
+    if (theme === 'light') document.body.classList.remove('dark-mode');
+  })();
+</script>
+
+<!-- Header -->
+<div class="os-header">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h1>Order Tracking</h1>
+      <p>Real-time status updates from our kitchen</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+        <i class="ti ti-sun"></i>
+      </button>
+      <div class="live-dot">Live Sync</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main content scroll view -->
+<div class="page-content" id="osContent">
+  <div class="loading-screen"><div class="spinner"></div><p>Fetching active tracker status…</p></div>
+</div>
+
+<!-- Sticky Bottom Nav -->
+<nav class="bottom-nav">
+  <a href="menu.html" aria-label="Menu">
+    <i class="ti ti-tools-kitchen-2"></i>
+    <span>Menu</span>
+  </a>
+  <a href="cart.html" aria-label="Cart" style="position:relative">
+    <i class="ti ti-shopping-cart"></i>
+    <span>Cart</span>
+    <span class="cart-count" style="display:none"></span>
+  </a>
+  <a href="order-status.html" class="active" aria-label="My Orders">
+    <i class="ti ti-receipt"></i>
+    <span>My Orders</span>
+  </a>
+</nav>
+
+<div class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script>
+const STEPS = [
+  { status: 'Pending',   icon: 'ti-clock',       label: 'Order Transmitted' },
+  { status: 'Accepted',  icon: 'ti-check',        label: 'Accepted by Kitchen' },
+  { status: 'Preparing', icon: 'ti-chef-hat',     label: 'Chef Preparing Dishes' },
+  { status: 'Ready',     icon: 'ti-bell',         label: 'Ready for Service' },
+  { status: 'Delivered', icon: 'ti-circle-check', label: 'Delivered & Served' },
+];
+const STATUS_ORDER = STEPS.map(s => s.status);
+
+let currentOrderId = null;
+let realtimeSub = null;
+let loadedOrders = {};
+
+async function init() {
+  updateCartBadges();
+  const lastId = localStorage.getItem('gdh_last_order');
+  const history = JSON.parse(localStorage.getItem('gdh_order_history') || '[]');
+
+  if (!lastId && !history.length) {
+    renderNoOrders();
+    return;
+  }
+
+  currentOrderId = lastId;
+  await loadOrders(history.length ? history : (lastId ? [lastId] : []));
+  subscribeRealtime();
+}
+
+async function loadOrders(ids) {
+  if (!ids.length) { renderNoOrders(); return; }
+  const sb = getSupabase();
+
+  const { data: orders } = await sb
+    .from('orders')
+    .select('*, order_items(*)')
+    .in('id', ids)
+    .order('created_at', { ascending: false });
+
+  if (!orders?.length) { renderNoOrders(); return; }
+  orders.forEach(o => { loadedOrders[o.id] = o; });
+  renderOrders(orders);
+}
+
+function renderOrders(orders) {
+  const lastId = localStorage.getItem('gdh_last_order');
+  const latest = orders.find(o => o.id === lastId) || orders[0];
+  const others = orders.filter(o => o.id !== latest.id);
+
+  let html = '';
+
+  // Current order card
+  html += renderOrderCard(latest, true);
+
+  // History list
+  if (others.length) {
+    html += `<div class="history-section fade-in-up"><div class="history-title">Previous Culinary Orders</div>`;
+    others.forEach(o => {
+      const short = o.id.slice(-6).toUpperCase();
+      html += `
+        <div class="history-item" onclick="showOrderDetail('${o.id}')">
+          <div class="history-item-left">
+            <span style="font-weight:600;font-size:0.95rem;color:var(--text-main)">${esc(o.location_label || 'Order')}</span>
+            <span class="history-item-id">#${short} · ${fmtTime(o.created_at)}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="status-pill status-${o.status}">${o.status}</span>
+            <i class="ti ti-chevron-right" style="color:var(--text-subtle)"></i>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  }
+
+  html += `
+    <div style="padding:0 16px 20px" class="fade-in-up">
+      <a href="menu.html" class="btn btn-outline btn-block">
+        <i class="ti ti-plus"></i> Order More Dishes
+      </a>
+    </div>`;
+
+  document.getElementById('osContent').innerHTML = html;
+}
+
+function renderOrderCard(order, live = false) {
+  const short = order.id.slice(-6).toUpperCase();
+  const currentStep = STATUS_ORDER.indexOf(order.status);
+  const isRejected = order.status === 'Rejected';
+
+  let stepperHtml = '';
+  if (!isRejected) {
+    STEPS.forEach((step, i) => {
+      const isDone = i < currentStep;
+      const isActive = i === currentStep;
+      const cls = isDone ? 'done' : isActive ? 'active' : '';
+      stepperHtml += `
+        <div class="step ${cls}">
+          <div class="step-icon"><i class="ti ${step.icon}"></i></div>
+          <div class="step-body">
+            <div class="step-label">${step.label}</div>
+            ${isActive ? `<div class="step-time" data-ts="${order.updated_at || order.created_at}">${timeAgo(order.updated_at || order.created_at)}</div>` : ''}
+          </div>
+        </div>`;
+    });
+  }
+
+  let itemsHtml = '';
+  (order.order_items || []).forEach(oi => {
+    const addons = Array.isArray(oi.selected_addons) && oi.selected_addons.length
+      ? oi.selected_addons.map(a => a.name).join(', ') : '';
+    itemsHtml += `
+      <div class="order-item-row">
+        <div style="flex:1">
+          <div class="order-item-name">${esc(oi.item_name)}</div>
+          ${addons ? `<div class="order-item-addons">${esc(addons)}</div>` : ''}
+          ${oi.special_instructions ? `<div class="order-item-addons" style="font-style:italic;color:var(--gold)">"${esc(oi.special_instructions)}"</div>` : ''}
+        </div>
+        <span class="order-item-qty">×${oi.quantity}</span>
+        <span class="order-item-price">${fmtPrice(oi.subtotal)}</span>
+      </div>`;
+  });
+
+  return `
+    <div class="order-card" id="order-${order.id}">
+      <div class="order-card-header">
+        <div>
+          <div style="font-weight:600;font-size:1.05rem;color:var(--text-main)">${esc(order.location_label || 'Dining Order')}</div>
+          <div class="order-id">#${short} · ${fmtTime(order.created_at)}</div>
+        </div>
+        <span class="status-pill status-${order.status}">${order.status}</span>
+      </div>
+      <div class="order-card-body">
+        ${isRejected ? `
+          <div class="rejected-banner">
+            <i class="ti ti-x" style="font-size:20px;flex-shrink:0"></i>
+            <span>This order was cancelled by the kitchen. Please request assistance or re-order.</span>
+          </div>` : ''}
+
+        ${!isRejected ? `<div class="stepper">${stepperHtml}</div>` : ''}
+
+        <hr class="divider">
+        <div style="font-size:0.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Culinary Breakdown</div>
+        <div class="order-items-list">${itemsHtml}</div>
+        
+        <hr class="divider" style="margin:16px 0">
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px">
+          <span style="color:var(--text-muted)">Order Subtotal</span><span style="color:var(--text-main)">${fmtPrice(order.total)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:10px">
+          <span style="color:var(--text-muted)">Service Charge</span><span style="color:var(--text-main)">${fmtPrice(order.service_fee)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem">
+          <span>Total Bill</span><span class="text-gold">${fmtPrice(order.grand_total)}</span>
+        </div>
+        ${order.notes ? `<div style="margin-top:14px;font-size:0.85rem;color:var(--warning);font-style:italic;background:var(--warning-bg);padding:6px 12px;border-radius:6px">Notes: ${esc(order.notes)}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function showOrderDetail(id) {
+  const order = loadedOrders[id];
+  if (!order) return;
+  localStorage.setItem('gdh_last_order', id);
+  location.reload();
+}
+
+// Fallback empty tracker
+function renderNoOrders() {
+  document.getElementById('osContent').innerHTML = `
+    <div class="empty-state fade-in-up" style="min-height:55dvh">
+      <i class="ti ti-receipt-off"></i>
+      <h3>No active orders</h3>
+      <p>Scan a guest QR menu at your dining table to submit dishes.</p>
+      <a href="menu.html" class="btn btn-gold mt-16"><i class="ti ti-tools-kitchen-2"></i> Browse Menu Card</a>
+    </div>`;
+}
+
+function subscribeRealtime() {
+  const sb = getSupabase();
+  const ids = JSON.parse(localStorage.getItem('gdh_order_history') || '[]');
+  if (!ids.length) return;
+
+  realtimeSub = sb
+    .channel('guest-order-updates')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'orders',
+    }, payload => {
+      const updated = payload.new;
+      if (!ids.includes(updated.id)) return;
+
+      const cached = loadedOrders[updated.id];
+      updated.order_items = cached?.order_items || [];
+      loadedOrders[updated.id] = updated;
+
+      const card = document.getElementById(`order-${updated.id}`);
+      if (card) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = renderOrderCard(updated, updated.id === currentOrderId);
+        card.replaceWith(tempDiv.firstElementChild);
+      }
+
+      const statusLabels = {
+        Accepted: '✅ Order accepted by the chef',
+        Preparing: '👨‍🍳 Kitchen has started preparing your dishes',
+        Ready: '🔔 Your food is ready for service!',
+        Delivered: '✅ Order delivered! Bon appétit!',
+        Rejected: '❌ Order cancelled by kitchen',
+      };
+      
+      if (statusLabels[updated.status]) {
+        if (updated.status === 'Rejected') {
+          playChimeSound('remove');
+        } else {
+          playChimeSound('success');
+        }
+        toast(statusLabels[updated.status], updated.status === 'Rejected' ? 'error' : 'success');
+        if (Notification.permission === 'granted') {
+          new Notification('Grand Dima Hotel', { body: statusLabels[updated.status] });
+        }
+      }
+    })
+    .subscribe();
+}
+
+// Register Browser Push
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+
+function updateTimes() {
+  document.querySelectorAll('.step-time').forEach(el => {
+    const ts = el.dataset.ts;
+    if (ts) el.textContent = timeAgo(ts);
+  });
+}
+setInterval(updateTimes, 10000);
+
+init();
+</script>
+</body>
+</html>
