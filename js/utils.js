@@ -339,9 +339,129 @@ function updateToggleIcons(theme) {
   });
 }
 
+// ---------- Service Worker Registration ----------
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered with scope:', reg.scope))
+        .catch(err => console.error('Service Worker registration failed:', err));
+    });
+  }
+}
+
+// ---------- Database Query Prefetching ----------
+async function prefetchDatabaseData(url) {
+  try {
+    const path = url.pathname;
+    
+    // 1. Prefetch menu categories & menu items
+    if (path.includes('menu.html') || path === '/' || path === '') {
+      const lastFetch = localStorage.getItem('gdh_last_menu_fetch');
+      if (lastFetch && Date.now() - parseInt(lastFetch) < 30000) return;
+
+      console.log('[Prefetch] Prefetching categories & menu items...');
+      const sb = getSupabase();
+      const [{ data: cats }, { data: items }] = await Promise.all([
+        sb.from('categories').select('*').order('sort_order'),
+        sb.from('menu_items').select('*, categories(name)').eq('available', true)
+      ]);
+
+      if (cats && items) {
+        localStorage.setItem('gdh_cached_categories', JSON.stringify(cats));
+        localStorage.setItem('gdh_cached_menu_items', JSON.stringify(items));
+        localStorage.setItem('gdh_last_menu_fetch', Date.now().toString());
+        console.log('[Prefetch] Cached categories & menu items.');
+      }
+    }
+    
+    // 2. Prefetch item detail specs
+    if (path.includes('item.html')) {
+      const id = url.searchParams.get('id');
+      if (!id) return;
+      
+      const lastFetch = localStorage.getItem(`gdh_last_item_fetch_${id}`);
+      if (lastFetch && Date.now() - parseInt(lastFetch) < 30000) return;
+
+      console.log(`[Prefetch] Prefetching item details for ${id}...`);
+      const sb = getSupabase();
+      const { data, error } = await sb.from('menu_items').select('*, categories(name)').eq('id', id).single();
+      if (data && !error) {
+        localStorage.setItem(`gdh_cached_item_${id}`, JSON.stringify(data));
+        localStorage.setItem(`gdh_last_item_fetch_${id}`, Date.now().toString());
+        console.log(`[Prefetch] Cached item details for ${id}.`);
+      }
+    }
+
+    // 3. Prefetch active order tracker updates
+    if (path.includes('order-status.html')) {
+      const history = JSON.parse(localStorage.getItem('gdh_order_history') || '[]');
+      if (!history.length) return;
+
+      const lastFetch = localStorage.getItem('gdh_last_orders_fetch');
+      if (lastFetch && Date.now() - parseInt(lastFetch) < 15000) return;
+
+      console.log('[Prefetch] Prefetching order status tracker...');
+      const sb = getSupabase();
+      const { data: orders } = await sb
+        .from('orders')
+        .select('*, order_items(*)')
+        .in('id', history)
+        .order('created_at', { ascending: false });
+
+      if (orders) {
+        localStorage.setItem('gdh_cached_orders', JSON.stringify(orders));
+        localStorage.setItem('gdh_last_orders_fetch', Date.now().toString());
+        console.log('[Prefetch] Cached active orders tracker.');
+      }
+    }
+  } catch (err) {
+    console.warn('[Prefetch] Error during background prefetch:', err);
+  }
+}
+
+// ---------- Hover & Touch Link Prefetcher ----------
+function initLinkPrefetcher() {
+  const htmlPrefetched = new Set();
+
+  function prefetchHTML(urlStr, urlObj) {
+    if (htmlPrefetched.has(urlStr)) return;
+    htmlPrefetched.add(urlStr);
+    
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = urlStr;
+    document.head.appendChild(link);
+    
+    // Trigger dynamic data prefetching in the background
+    prefetchDatabaseData(urlObj);
+  }
+
+  function handleHover(e) {
+    const a = e.target.closest('a');
+    if (!a || !a.href) return;
+
+    try {
+      const url = new URL(a.href, window.location.href);
+      if (url.origin === window.location.origin) {
+        if (url.pathname && !a.href.startsWith('javascript:')) {
+          prefetchHTML(url.pathname + url.search, url);
+        }
+      }
+    } catch (err) {
+      console.warn('[Prefetcher] Invalid URL for prefetching:', err);
+    }
+  }
+
+  document.addEventListener('mouseover', handleHover);
+  document.addEventListener('touchstart', handleHover, { passive: true });
+}
+
 // Auto-run on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  registerServiceWorker();
+  initLinkPrefetcher();
 
   document.body.addEventListener('click', (e) => {
     const btn = e.target.closest('#themeToggle') || e.target.closest('.theme-toggle-btn');

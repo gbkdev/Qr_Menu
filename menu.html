@@ -485,19 +485,50 @@
 
     // ---- Load menu ----
     async function loadMenu() {
-      const sb = getSupabase();
+      // 1. Try to load cached data immediately for instant display
+      try {
+        const cachedCats = localStorage.getItem('gdh_cached_categories');
+        const cachedItems = localStorage.getItem('gdh_cached_menu_items');
+        if (cachedCats && cachedItems) {
+          categories = JSON.parse(cachedCats);
+          allItems = JSON.parse(cachedItems);
+          renderCategories();
+          renderMenu();
+          initCartUI();
+        }
+      } catch (e) {
+        console.warn('[Cache] Error loading cached menu:', e);
+      }
 
+      // 2. Fetch fresh data from Supabase in the background
+      const sb = getSupabase();
       const [{ data: cats }, { data: items }] = await Promise.all([
         sb.from('categories').select('*').order('sort_order'),
         sb.from('menu_items').select('*, categories(name)').eq('available', true)
       ]);
 
-      categories = cats || [];
-      allItems = items || [];
+      const freshCats = cats || [];
+      const freshItems = items || [];
 
-      renderCategories();
-      renderMenu();
-      initCartUI();
+      // 3. Determine if the data has actually changed (to prevent screen flickering)
+      const cachedCatsRaw = localStorage.getItem('gdh_cached_categories');
+      const cachedItemsRaw = localStorage.getItem('gdh_cached_menu_items');
+      const dataChanged = JSON.stringify(freshCats) !== cachedCatsRaw ||
+                          JSON.stringify(freshItems) !== cachedItemsRaw;
+
+      // 4. Update the localStorage cache
+      localStorage.setItem('gdh_cached_categories', JSON.stringify(freshCats));
+      localStorage.setItem('gdh_cached_menu_items', JSON.stringify(freshItems));
+      localStorage.setItem('gdh_last_menu_fetch', Date.now().toString());
+
+      // 5. Update state and re-render only if there is a change or if we haven't rendered yet
+      if (dataChanged || !categories.length) {
+        categories = freshCats;
+        allItems = freshItems;
+        renderCategories();
+        renderMenu();
+        initCartUI();
+      }
     }
 
     function renderCategories() {
